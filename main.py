@@ -100,8 +100,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="searchgpt",
-            provider=g4f.Provider.PollinationsAI,
+            model="gpt-4",
+            provider=g4f.Provider.Bing,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -120,8 +120,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="searchgpt",
-            provider=g4f.Provider.PollinationsAI,
+            model="gpt-4",
+            provider=g4f.Provider.Bing,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -148,6 +148,14 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     except Exception as e:
         logger.error(f"Photo search error for {query}: {e}")
         return "Фото не найдено 😕"
+
+async def gradual_reply(context, chat_id, message_id, text):
+    words = text.split()
+    current_text = ""
+    for word in words:
+        current_text += word + " "
+        await context.bot.edit_message_text(text=current_text.strip(), chat_id=chat_id, message_id=message_id)
+        await asyncio.sleep(0.1)
 
 def load_memes():
     try:
@@ -376,21 +384,22 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
             logger.info(f"Voice message sent successfully")
             os.remove(response["voice_file"])
         else:
-            await update.message.reply_text(response["text"], reply_markup=response["reply_markup"])
+            msg = await update.message.reply_text("⏳")
+            await gradual_reply(context, update.effective_chat.id, msg.message_id, response["text"])
     except Exception as e:
         logger.error(f"Send meme response error: {e}")
         emoji = random.choice(["🦈", "🦄", "🦁", "🎸", "🌟"])
-        await update.message.reply_text(
+        msg = await update.message.reply_text("⏳")
+        await gradual_reply(context, update.effective_chat.id, msg.message_id,
             f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n{meme['description']}\n\n"
-            f"Фото не найдено 😕\n\nМем без вайба! 😕 Го дальше? 🌟🎉",
-            reply_markup=MENU_KEYBOARD
+            f"Фото не найдено 😕\n\nМем без вайба! 😕 Го дальше? 🌟🎉"
         )
 
 def main():
     TOKEN = os.getenv("TELEGRAM_TOKEN")
     if not TOKEN:
         logger.error("TELEGRAM_TOKEN not set in environment variables")
-        raise ValueValueError("TELEGRAM_TOKEN is required")
+        raise ValueError("TELEGRAM_TOKEN is required")
     
     try:
         requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
