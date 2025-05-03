@@ -19,7 +19,6 @@ from telegram.ext import (
     ContextTypes
 )
 from pydub import AudioSegment
-from bs4 import BeautifulSoup
 from background import keep_alive
 
 # Логи и конфиг
@@ -37,52 +36,52 @@ FUNNY_PHRASES = [
     "Ёпт, башню рвёт, херня! 🤯",
     "Фигня полная, но угар! 😝",
     "Чё за хрень, мать её?! 💥",
-    "Кринж, но пиздец топ! 💀",
+    "Кринж, но пипец топ! 💀",
     "Ору, как псих, ёпт! 🗣️",
     "Блин, разнос, хер с ним! 🔥",
     "Блэ, мем порвал жопу! 🍑",
-    "Нафиг мозг, жги, сука! 🦍",
+    "Нафиг мозг, жги, чёрт! 🦍",
     "Похер всё, я в агонии! 🏆",
-    "Пиздец, а не мем, блин! 😵",
+    "Пипец, а не мем, блин! 😵",
     "Го в тренды, херня эта! 🌈",
     "Чё за дичь, но пушка! 💣",
     "Мозг в ауте, угар, ёпт! 🦒",
-    "Блин, ору, пиздец! 😣",
+    "Блин, ору, пипец! 😣",
     "Кринж уровня бог, херня! 💿",
-    "Жесть, держись, сука! ⚡",
+    "Жесть, держись, чёрт! ⚡",
     "Похер всё, мем тащит! 🦄",
-    "Это не мем, это пиздец! 😈",
+    "Это не мем, это пипец! 😈",
     "Трындец, башка в шоке! 🪐",
     "Блин, где мой фильтр, ёпт?! 🦈",
     "Огонь, мать её, жги! 🔥",
-    "Пиздец, я в астрале! 🌌",
+    "Пипец, я в астрале! 🌌",
     "Херня, но ржака, блэ! 😝",
     "Мем порвал, как туз! 🃏",
     "Чё за дичь, но топ, ёпт! 🦖",
     "Блин, я в ауте, херня! 💀",
-    "Кринж, но ору, сука! 🗣️",
+    "Кринж, но ору, чёрт! 🗣️",
     "Похер, это разрыв! 💥",
     "Блэ, мем жёсткий, ёпт! 🍺",
     "Нафиг всё, я в шоке! 😵",
-    "Пиздец, держи, блин! 🦒",
-    "Тусим, херня, пиздец! 🪩",
+    "Пипец, держи, блин! 🦒",
+    "Тусим, херня, пипец! 🪩",
     "Мозг офф, угар он! 🌟",
     "Фиг с ним, это топ! 🚀",
     "Жесть, я в кринже, ёпт! 😣",
-    "Пиздец, мем унёс! 🦄",
-    "Блин, это нереал, сука! 😈",
+    "Пипец, мем унёс! 🦄",
+    "Блин, это нереал, чёрт! 😈",
     "Ору, как псих, блэ! 🗣️",
-    "Кринж, но пиздец! 💀",
+    "Кринж, но пипец! 💀",
     "Нафиг всё, жги, ёпт! 🔥",
     "Херня, но пушка, блин! 💣",
     "Похер, я в трансе! 🪐",
     "Блэ, мем разъебал! 🍑",
     "Трындец, я в агонии! 🦍",
     "Блин, разнос, херня! 🏆",
-    "Чё за дичь, пиздец! 😵",
+    "Чё за дичь, пипец! 😵",
     "Мем порвал, как бог! 🌈",
     "Фигня, но угар, ёпт! 😝",
-    "Пиздец, я в шоке! 💥",
+    "Пипец, я в шоке! 💥",
     "Топ, мать её, топ! 🦄"
 ]
 
@@ -127,46 +126,6 @@ MENU_KEYBOARD = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-# Извлечение ключевых слов для поиска
-def extract_keywords(description):
-    words = description.lower().split()
-    stop_words = {"с", "на", "в", "и", "под", "над", "у", "из", "к", "об"}
-    keywords = [word for word in words if word not in stop_words and len(word) > 3][:3]
-    return " ".join(keywords)
-
-# Поиск изображения через Google Images
-def search_image(description, filename):
-    try:
-        query = extract_keywords(description)
-        logger.info(f"Searching Google Images for: {query}")
-        url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, "html.parser")
-        images = soup.find_all("img")
-        for img in images:
-            src = img.get("src")
-            if src and src.startswith("http"):
-                img_response = requests.get(src, headers=headers, stream=True, timeout=10)
-                img_response.raise_for_status()
-                with open(filename, "wb") as f:
-                    for chunk in img_response.iter_content(chunk_size=8192):
-                        f.write(chunk)
-                file_size = os.path.getsize(filename)
-                if file_size > 1000:
-                    logger.info(f"Image downloaded: {filename}, size: {file_size} bytes")
-                    return True
-                os.remove(filename)
-        logger.warning(f"No valid images found for query: {query}")
-        return False
-    except Exception as e:
-        logger.error(f"Image search error: {e}", exc_info=True)
-        return False
-
 # Управление временными файлами
 @contextmanager
 def temp_audio_files():
@@ -185,20 +144,6 @@ def temp_audio_files():
             except Exception as e:
                 logger.warning(f"Failed to delete temp file {path}: {e}")
 
-@contextmanager
-def temp_image_file():
-    img_fd, img_path = tempfile.mkstemp(suffix=".jpg", dir=AUDIO_DIR)
-    try:
-        yield img_path
-    finally:
-        try:
-            os.close(img_fd)
-            if os.path.exists(img_path):
-                os.remove(img_path)
-                logger.info(f"Deleted temp image file: {img_path}")
-        except Exception as e:
-            logger.warning(f"Failed to delete temp image file {img_path}: {e}")
-
 # Генерация эмодзи по описанию
 def generate_emoji(description):
     description = description.lower()
@@ -216,12 +161,12 @@ def generate_funny_phrase(user_id):
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня'), без жёсткого мата, угарную."
+    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня', 'пипец'), без жёсткого мата, угарную."
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
     logger.info(f"Sending request for funny phrase for user {user_id}: {url}")
-    for _ in range(3):
+    for attempt in range(3):
         try:
             response = requests.get(url, timeout=15)
             response.raise_for_status()
@@ -238,7 +183,7 @@ def generate_funny_phrase(user_id):
                     return phrase
             logger.warning(f"Invalid or repeated funny phrase for user {user_id}: {phrase}")
         except Exception as e:
-            logger.error(f"Funny phrase generation error for user {user_id}: {e}", exc_info=True)
+            logger.error(f"Funny phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}", exc_info=True)
     
     available_phrases = [p for p in FUNNY_PHRASES if p not in user_phrases]
     if not available_phrases:
@@ -296,6 +241,8 @@ def download_meme_sound(sound_url, filename):
         with open(filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
+        file_size = os.path.getsize(filename)
+        logger.info(f"Downloaded meme sound {sound_url} to {filename}, size: {file_size} bytes")
         return True
     except Exception as e:
         logger.error(f"Failed to download meme sound {sound_url}: {e}")
@@ -313,46 +260,48 @@ def generate_meme_audio(text, filename):
     }[effect_name]
     
     prompt = (
-        f"Озвучь как дерзкий итальянский пацан с TikTok-вайбом, с абсурдной энергией, лёгким матом (ёпт, херня), и угаром: {text}{effect_prompt}"
+        f"Озвучь как дерзкий итальянский пацан с TikTok-вайбом, с абсурдной энергией, лёгким матом (ёпт, херня, пипец), и угаром: {text}{effect_prompt}"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=echo&attitude=aggressive"
     
-    logger.info(f"Sending request to API: {url}")
-    try:
-        response = requests.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        
-        with open(filename, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        
-        file_size = os.path.getsize(filename)
-        if file_size < 1000:
-            logger.warning(f"Generated audio file {filename} too small: {file_size} bytes")
-            return False
-        
-        # Наложение мемного звука
-        with tempfile.NamedTemporaryFile(suffix=".mp3", dir=AUDIO_DIR, delete=False) as effect_file:
-            if download_meme_sound(effect_url, effect_file.name):
-                try:
-                    main_audio = AudioSegment.from_mp3(filename)
-                    effect_audio = AudioSegment.from_mp3(effect_file.name)
-                    # Наложение эффекта в конце
-                    combined = main_audio + effect_audio
-                    combined.export(filename, format="mp3")
-                    logger.info(f"Added meme sound effect '{effect_name}' to {filename}")
-                except Exception as e:
-                    logger.warning(f"Failed to overlay meme sound: {e}")
-        
-        logger.info(f"Audio generated: {filename}, size: {os.path.getsize(filename)} bytes")
-        return True
-    except requests.HTTPError as e:
-        logger.error(f"Audio API HTTP error: {e}, response: {e.response.text}")
-        return False
-    except Exception as e:
-        logger.error(f"Audio API error: {e}", exc_info=True)
-        return False
+    logger.info(f"Sending audio request to API: {url}")
+    for attempt in range(3):
+        try:
+            response = requests.get(url, stream=True, timeout=30)
+            response.raise_for_status()
+            
+            with open(filename, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            
+            file_size = os.path.getsize(filename)
+            if file_size < 1000:
+                logger.warning(f"Generated audio file {filename} too small: {file_size} bytes")
+                return False
+            
+            # Наложение мемного звука
+            with tempfile.NamedTemporaryFile(suffix=".mp3", dir=AUDIO_DIR, delete=False) as effect_file:
+                if download_meme_sound(effect_url, effect_file.name):
+                    try:
+                        main_audio = AudioSegment.from_mp3(filename)
+                        effect_audio = AudioSegment.from_mp3(effect_file.name)
+                        # Наложение эффекта в конце
+                        combined = main_audio + effect_audio
+                        combined.export(filename, format="mp3")
+                        logger.info(f"Added meme sound effect '{effect_name}' to {filename}")
+                    except Exception as e:
+                        logger.warning(f"Failed to overlay meme sound: {e}")
+            
+            logger.info(f"Audio generated: {filename}, size: {os.path.getsize(filename)} bytes")
+            return True
+        except requests.HTTPError as e:
+            logger.error(f"Audio API HTTP error (attempt {attempt + 1}): {e}, response: {e.response.text}")
+        except Exception as e:
+            logger.error(f"Audio API error (attempt {attempt + 1}): {e}", exc_info=True)
+    
+    logger.error("Failed to generate audio after 3 attempts")
+    return False
 
 # Конвертация в OGG
 def convert_to_ogg(mp3_path, ogg_path):
@@ -375,7 +324,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "❓ Найти мем — ищу по вайбу\n"
         "🎲 Рандом — угарный движ\n"
         "🚀 Помощь — как не лажануть\n\n"
-        "Сайт: https://memezvukachbot.onrender.com",
+        "Го жечь, пацан! 🔥",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -383,15 +332,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"{EMOJIS['help']} MEMEZVUKACH: гайд для тусы\n\n"
-        "Кидаю мемы и ору их с матом, херня!\n\n"
+        "Кидаю мемы и ору их с лёгким матом, херня!\n\n"
         "Команды:\n"
         f"/start — врываемся в угар {EMOJIS['start']}\n"
         f"/help — этот гайд {EMOJIS['help']}\n"
         f"/random — рандомный мем с озвучкой {EMOJIS['random']}\n\n"
         "❓ Найти мем — вбей название или описание\n"
         "🎲 Рандом — мемный сюрприз\n"
-        f"{EMOJIS['audio']} Озвучка — пиздец угар!\n\n"
-        "Сайт: https://memezvukachbot.onrender.com\n"
+        f"{EMOJIS['audio']} Озвучка — пипец угар!\n\n"
         "Го жечь, пацан! 🔥",
         reply_markup=MENU_KEYBOARD
     )
@@ -421,7 +369,7 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Random meme error: {e}", exc_info=True)
         await update.message.reply_text(
-            f"{EMOJIS['error']} Чёт сломалось, пиздец! Го заново? 😣",
+            f"{EMOJIS['error']} Чёт сломалось, пипец! Го заново? 😣",
             reply_markup=MENU_KEYBOARD
         )
 
@@ -463,7 +411,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         if not meme:
             await msg.edit_text(
-                f"{EMOJIS['error']} Не нашёл мем, пиздец! Попробуй другой! 😣",
+                f"{EMOJIS['error']} Не нашёл мем, пипец! Попробуй другой! 😣",
                 reply_markup=MENU_KEYBOARD
             )
             return
@@ -489,20 +437,6 @@ async def prepare_meme_response(meme, user_id):
     logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id} with emoji '{emoji}' and voice text: {voice_text}")
     
     try:
-        with temp_image_file() as img_path:
-            image_success = search_image(meme["description"], img_path)
-            if image_success:
-                return {
-                    "type": "photo",
-                    "image_path": img_path,
-                    "voice_text": voice_text,
-                    "caption": (
-                        f"{emoji} {meme['name']}\n\n"
-                        f"{meme['description']}\n\n"
-                        f"{EMOJIS['success']} Го ещё мемас, ёпт? 🔥"
-                    ),
-                    "reply_markup": MENU_KEYBOARD
-                }
         return {
             "type": "voice",
             "voice_text": voice_text,
@@ -518,7 +452,7 @@ async def prepare_meme_response(meme, user_id):
         return {
             "type": "text",
             "text": (
-                f"{EMOJIS['error']} Чёт сломалось, пиздец!\n\n"
+                f"{EMOJIS['error']} Чёт сломалось, пипец!\n\n"
                 f"{emoji} {meme['name']}\n{meme['description']}\n\n"
                 "Го заново, херня? 😣"
             ),
@@ -528,40 +462,7 @@ async def prepare_meme_response(meme, user_id):
 # Отправка ответа
 async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE, response, meme):
     try:
-        if response["type"] == "photo":
-            with temp_audio_files() as (mp3_path, ogg_path):
-                await context.bot.send_chat_action(
-                    chat_id=update.effective_chat.id,
-                    action="upload_photo"
-                )
-                with open(response["image_path"], "rb") as photo_file:
-                    photo_msg = await update.message.reply_photo(
-                        photo=photo_file,
-                        caption=response["caption"],
-                        reply_markup=response["reply_markup"]
-                    )
-                
-                audio_success = False
-                if generate_meme_audio(response["voice_text"], mp3_path):
-                    if convert_to_ogg(mp3_path, ogg_path):
-                        audio_success = True
-                        await context.bot.send_chat_action(
-                            chat_id=update.effective_chat.id,
-                            action="record_voice"
-                        )
-                        with open(ogg_path, "rb") as audio_file:
-                            await update.message.reply_voice(
-                                voice=audio_file,
-                                caption=f"{EMOJIS['audio']} Озвучка для {meme['name']}, ёпт!",
-                                reply_to_message_id=photo_msg.message_id
-                            )
-                        logger.info(f"Photo and voice sent successfully for meme: {meme['name']}")
-                        return
-                
-                logger.warning("Audio generation failed, photo sent without voice")
-                return
-        
-        elif response["type"] == "voice":
+        if response["type"] == "voice":
             with temp_audio_files() as (mp3_path, ogg_path):
                 await context.bot.send_chat_action(
                     chat_id=update.effective_chat.id,
@@ -585,7 +486,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 await update.message.reply_text(
                     f"{emoji} {meme['name']}\n\n"
                     f"{meme['description']}\n\n"
-                    f"{EMOJIS['error']} API блочит, херня! Мем пушка! 😣",
+                    f"{EMOJIS['error']} API аудио сломался, херня! Мем пушка! 😣",
                     reply_markup=response["reply_markup"]
                 )
         else:
@@ -597,7 +498,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
         logger.error(f"Send meme response error: {e}", exc_info=True)
         emoji = generate_emoji(meme["description"])
         await update.message.reply_text(
-            f"{EMOJIS['error']} Сломалось, пиздец!\n\n"
+            f"{EMOJIS['error']} Сломалось, пипец!\n\n"
             f"{emoji} {meme['name']}\n{meme['description']}\n\n"
             "Го ещё, херня? 😣",
             reply_markup=MENU_KEYBOARD
