@@ -31,60 +31,6 @@ MEMES_JSON = "memes.json"
 AUDIO_DIR = "meme_audios"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
-# Локальный список угарных фраз с лёгким матом
-FUNNY_PHRASES = [
-    "Ёпт, башню рвёт, херня! 🤯",
-    "Фигня полная, но угар! 😝",
-    "Чё за хрень, мать её?! 💥",
-    "Кринж, но пипец топ! 💀",
-    "Ору, как псих, ёпт! 🗣️",
-    "Блин, разнос, хер с ним! 🔥",
-    "Блэ, мем порвал жопу! 🍑",
-    "Нафиг мозг, жги, чёрт! 🦍",
-    "Похер всё, я в агонии! 🏆",
-    "Пипец, а не мем, блин! 😵",
-    "Го в тренды, херня эта! 🌈",
-    "Чё за дичь, но пушка! 💣",
-    "Мозг в ауте, угар, ёпт! 🦒",
-    "Блин, ору, пипец! 😣",
-    "Кринж уровня бог, херня! 💿",
-    "Жесть, держись, чёрт! ⚡",
-    "Похер всё, мем тащит! 🦄",
-    "Это не мем, это пипец! 😈",
-    "Трындец, башка в шоке! 🪐",
-    "Блин, где мой фильтр, ёпт?! 🦈",
-    "Огонь, мать её, жги! 🔥",
-    "Пипец, я в астрале! 🌌",
-    "Херня, но ржака, блэ! 😝",
-    "Мем порвал, как туз! 🃏",
-    "Чё за дичь, но топ, ёпт! 🦖",
-    "Блин, я в ауте, херня! 💀",
-    "Кринж, но ору, чёрт! 🗣️",
-    "Похер, это разрыв! 💥",
-    "Блэ, мем жёсткий, ёпт! 🍺",
-    "Нафиг всё, я в шоке! 😵",
-    "Пипец, держи, блин! 🦒",
-    "Тусим, херня, пипец! 🪩",
-    "Мозг офф, угар он! 🌟",
-    "Фиг с ним, это топ! 🚀",
-    "Жесть, я в кринже, ёпт! 😣",
-    "Пипец, мем унёс! 🦄",
-    "Блин, это нереал, чёрт! 😈",
-    "Ору, как псих, блэ! 🗣️",
-    "Кринж, но пипец! 💀",
-    "Нафиг всё, жги, ёпт! 🔥",
-    "Херня, но пушка, блин! 💣",
-    "Похер, я в трансе! 🪐",
-    "Блэ, мем разъебал! 🍑",
-    "Трындец, я в агонии! 🦍",
-    "Блин, разнос, херня! 🏆",
-    "Чё за дичь, пипец! 😵",
-    "Мем порвал, как бог! 🌈",
-    "Фигня, но угар, ёпт! 😝",
-    "Пипец, я в шоке! 💥",
-    "Топ, мать её, топ! 🦄"
-]
-
 # Мемные звуковые эффекты
 MEME_SOUNDS = [
     ("scream", "https://freesound.org/data/previews/269/269764_4299048-lq.mp3"),  # Громкий ор
@@ -155,23 +101,23 @@ def generate_emoji(description):
     logger.info(f"No matching keyword found, selected default emoji '{default_emoji}'")
     return default_emoji
 
-# Генерация угарной фразы с лёгким матом
+# Генерация угарной фразы с лёгким матом через API
 def generate_funny_phrase(user_id):
     if user_id not in user_phrase_history:
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня', 'пипец'), без жёсткого мата, угарную."
+    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня', 'пипец'), без жёсткого мата, угарную, не длиннее 50 символов."
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
     logger.info(f"Sending request for funny phrase for user {user_id}: {url}")
-    for attempt in range(3):
+    for attempt in range(5):  # Увеличил до 5 попыток
         try:
             response = requests.get(url, timeout=15)
             response.raise_for_status()
             phrase = response.text.strip()
-            if phrase and len(phrase) <= 100 and phrase not in user_phrases:
+            if phrase and len(phrase) <= 50 and phrase not in user_phrases:
                 # Фильтрация через PurgoMalum
                 filter_url = f"https://www.purgomalum.com/service/containsprofanity?text={urllib.parse.quote(phrase)}"
                 filter_response = requests.get(filter_url, timeout=5)
@@ -185,15 +131,22 @@ def generate_funny_phrase(user_id):
         except Exception as e:
             logger.error(f"Funny phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}", exc_info=True)
     
-    available_phrases = [p for p in FUNNY_PHRASES if p not in user_phrases]
+    # Запасная фраза без мата, если API не сработал
+    backup_phrases = [
+        "Ёпт, мем жжёт, херня! 🔥",
+        "Блин, угар, пипец! 😝",
+        "Чё за дичь, но топ! 💣",
+        "Кринж, но ржака! 💀"
+    ]
+    available_phrases = [p for p in backup_phrases if p not in user_phrases]
     if not available_phrases:
         user_phrases.clear()
-        available_phrases = FUNNY_PHRASES
+        available_phrases = backup_phrases
     phrase = random.choice(available_phrases)
     user_phrases.append(phrase)
     if len(user_phrases) > 20:
         user_phrases.pop(0)
-    logger.info(f"Selected local funny phrase for user {user_id}: {phrase}")
+    logger.info(f"Selected backup funny phrase for user {user_id}: {phrase}")
     return phrase
 
 # Загрузка мемов
@@ -266,7 +219,7 @@ def generate_meme_audio(text, filename):
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=echo&attitude=aggressive"
     
     logger.info(f"Sending audio request to API: {url}")
-    for attempt in range(3):
+    for attempt in range(5):  # Увеличил до 5 попыток
         try:
             response = requests.get(url, stream=True, timeout=30)
             response.raise_for_status()
@@ -300,7 +253,7 @@ def generate_meme_audio(text, filename):
         except Exception as e:
             logger.error(f"Audio API error (attempt {attempt + 1}): {e}", exc_info=True)
     
-    logger.error("Failed to generate audio after 3 attempts")
+    logger.error("Failed to generate audio after 5 attempts")
     return False
 
 # Конвертация в OGG
@@ -439,6 +392,7 @@ async def prepare_meme_response(meme, user_id):
     try:
         return {
             "type": "voice",
+ NumPy docstring format
             "voice_text": voice_text,
             "caption": (
                 f"{emoji} {meme['name']}\n\n"
@@ -486,7 +440,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 await update.message.reply_text(
                     f"{emoji} {meme['name']}\n\n"
                     f"{meme['description']}\n\n"
-                    f"{EMOJIS['error']} API аудио сломался, херня! Мем пушка! 😣",
+                    f"{EMOJIS['error']} Аудио сломалось, херня! Мем пушка! 😣",
                     reply_markup=response["reply_markup"]
                 )
         else:
