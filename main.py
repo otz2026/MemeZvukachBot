@@ -358,7 +358,7 @@ def generate_meme_audio(text, filename):
 def convert_to_ogg(mp3_path, ogg_path):
     try:
         audio = AudioSegment.from_mp3(mp3_path)
-        audio = audio.set_frame_rate(44100).set  audio.set_channels(1)
+        audio = audio.set_frame_rate(44100).set_channels(1)
         audio.export(ogg_path, format="ogg", codec="libopus", bitrate="64k")
         file_size = os.path.getsize(ogg_path)
         logger.info(f"Converted to OGG: {ogg_path}, size: {file_size} bytes")
@@ -374,7 +374,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Бро, мемы на максималках! Вбей название или жми:\n"
         "❓ Найти мем — ищу по вайбу\n"
         "🎲 Рандом — угарный движ\n"
-        "🚀 Помощь — как не лажануть",
+        "🚀 Помощь — как не лажануть\n\n"
+        "Сайт: https://memezvukachbot.onrender.com",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -390,6 +391,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "❓ Найти мем — вбей название или описание\n"
         "🎲 Рандом — мемный сюрприз\n"
         f"{EMOJIS['audio']} Озвучка — пиздец угар!\n\n"
+        "Сайт: https://memezvukachbot.onrender.com\n"
         "Го жечь, пацан! 🔥",
         reply_markup=MENU_KEYBOARD
     )
