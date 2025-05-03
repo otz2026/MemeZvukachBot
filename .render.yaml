@@ -1,12 +1,9 @@
 services:
   - type: web
     name: MemeZvukachBot
-    env: python
+    env: docker
     plan: free
-    buildCommand: sudo apt-get update && sudo apt-get install -y ffmpeg && sudo apt-get clean && pip install -r requirements.txt
-    startCommand: python main.py
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.9.18
       - key: TELEGRAM_TOKEN
         sync: false
