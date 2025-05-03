@@ -3,338 +3,434 @@
     {
       "id": 1,
       "name": "Тралалеро Тралала",
-      "description": "Трёхногая акула с гладкой синей кожей, две ноги заменяют боковые плавники, третья — на конце хвоста, обута в ярко-синие кроссовки Nike с неоновыми шнурками. Танцует на тропическом пляже с золотым песком, окружённом пальмами. Поза энергичная, с пустым, слегка жутковатым взглядом. Фон: закатное небо с оранжево-розовыми облаками, лёгкие волны плещутся у берега. Стиль: неоновый сюрреализм, высокая детализация.",
+      "description": "Трёхногая акула с синей кожей, две ноги вместо боковых плавников, третья на хвосте, в синих кроссовках Nike с неоновыми шнурками. Танцует на тропическом пляже с золотым песком и пальмами, закатное небо с оранжево-розовыми облаками, волны у берега. Стиль: неоновый сюрреализм, высокая детализация.",
       "slogan": "Porca vacca, balla come matto!",
-      "tiktok_phrase": "Andiamo a Fortnite, cavolo la lag!"
+      "tiktok_phrase": "Tra la la, ballo sulla spiaggia, cavolo!",
+      "name_english": "Tralalero Tralala",
+      "name_italian": "Tralalero Tralala"
     },
     {
       "id": 2,
       "name": "Бомбардиро Крокодило",
-      "description": "Крокодил, слитый с бомбардировщиком B-25, чешуйчатая зелёная кожа переходит в металлический корпус самолёта. Голова с острыми зубами, во рту сигара, глаза горят красным. Танцует в розовой балетной пачке, крылья с чешуёй машут в воздухе. Летит над пустыней с барханами и кактусами. Фон: пыльное небо с дымными следами от ракет, вдали видны взрывы. Стиль: киберпанк с милитари-эстетикой, высокая детализация.",
+      "description": "Крокодил, слитый с бомбардировщиком B-25, зелёная чешуя переходит в металлический корпус. Голова с зубами, сигара во рту, красные глаза. Танцует в розовой балетной пачке, крылья машут. Летит над пустыней с барханами, пыльное небо, взрывы вдали. Стиль: киберпанк-милитари, высокая детализация.",
       "slogan": "Porco dio, que baila feo!",
-      "tiktok_phrase": "Streammo in tuta, dove cavolo i like?!"
+      "tiktok_phrase": "Bombo croco, volo e ballo, cavolo!",
+      "name_english": "Bombardier Crocodile",
+      "name_italian": "Coccodrillo Bombardiere"
     },
     {
       "id": 3,
       "name": "Тунг Тунг Тунг Сахур",
-      "description": "Антропоморфное деревянное полено с грубой корой, человеческие глаза светятся красным, в руках бейсбольная бита с шипами. Одето в чёрный плащ с капюшоном, на поясе висит барабан, издающий 'тунг-тунг'. Стоит в тёмном переулке с мокрым асфальтом. Фон: ночной город с неоновыми вывесками, туман стелется по земле. Стиль: мрачный хоррор с элементами нуара.",
+      "description": "Антропоморфное полено с грубой корой, красные светящиеся глаза, в чёрном плаще с капюшоном, держит шипастую бейсбольную биту. Барабан на поясе издаёт 'тунг-тунг'. Стоит в тёмном переулке, мокрый асфальт, неоновые вывески, туман. Стиль: хоррор-нуар, высокая детализация.",
       "slogan": "Mamma mia, che paura!",
-      "tiktok_phrase": "Chi gioca scuro, cavolo il ban!"
+      "tiktok_phrase": "Tung tung, paura nel vicolo, cavolo!",
+      "name_english": "Tung Tung Tung Sahur",
+      "name_italian": "Tung Tung Tung Sahur"
     },
     {
       "id": 4,
       "name": "Лирили Ларила",
-      "description": "Гибрид слона и кактуса, тело слона покрыто зелёной колючей кожей, хобот длинный, вместо ушей — розовые цветы кактуса. Ноги в массивных сандалиях-биркенштоках, рядом парит летающий будильник с крыльями. Идёт по пустыне с красными дюнами. Фон: миражное небо с дрожащим горизонтом, вдали видны оазисы. Стиль: сюрреализм с яркими цветами.",
+      "description": "Гибрид слона и кактуса, зелёная колючая кожа, длинный хобот, розовые цветы кактуса вместо ушей. Ноги в сандалиях-биркенштоках, летающий будильник с крыльями парит рядом. Идёт по пустыне с красными дюнами, миражное небо, оазисы вдали. Стиль: яркий сюрреализм.",
       "slogan": "¡Dios mío, qué locura!",
-      "tiktok_phrase": "Deserto vibe, dov’è il filtro, accipicchia?!"
+      "tiktok_phrase": "Lirili, cammino nel deserto, accipicchia!",
+      "name_english": "Lirili Larila",
+      "name_italian": "Lirili Larila"
     },
     {
       "id": 5,
       "name": "Бонека Амбалабу",
-      "description": "Зловещая кукла с потрёпанным фарфоровым лицом, треснувшими щеками и пустыми глазами. Одета в рваное платье с кружевами, в руках ржавый нож. Стоит в заброшенном доме с ободранными обоями. Фон: тёмные комнаты с паутиной, тусклый свет от разбитого окна. Стиль: готический хоррор с элементами AI-искажений.",
+      "description": "Зловещая фарфоровая кукла с треснувшим лицом, пустыми глазами, в рваном кружевном платье, держит ржавый нож. Стоит в заброшенном доме, ободранные обои, паутина, тусклый свет из разбитого окна. Стиль: готический хоррор, AI-искажения.",
       "slogan": "Cazzo, che spavento!",
-      "tiktok_phrase": "Screamer di notte, tieni sto vibe!"
+      "tiktok_phrase": "Boneka, spavento nella casa, cavolo!",
+      "name_english": "Boneka Ambalabu",
+      "name_italian": "Bambola Ambalabu"
     },
     {
       "id": 6,
       "name": "Брр Брр Патапим",
-      "description": "Гибрид обезьяны и леса, тело покрыто мхом и лианами, ноги огромные, с когтями, глаза светятся зелёным. Танцует в густом тропическом лесу, окружённом папоротниками. Фон: звёздное небо с психоделическими радужными оттенками, лунный свет пробивается сквозь листву. Стиль: психоделический с элементами природы.",
+      "description": "Гибрид обезьяны и леса, тело покрыто мхом и лианами, большие ноги с когтями, зелёные светящиеся глаза. Танцует в тропическом лесу с папоротниками, звёздное небо с радужными оттенками, лунный свет. Стиль: психоделический, природный.",
       "slogan": "Ёпрст, какой трип!",
-      "tiktok_phrase": "Jungla party, niente fake, cavolo!"
+      "tiktok_phrase": "Brr brr, ballo nella giungla, cavolo!",
+      "name_english": "Brr Brr Patapim",
+      "name_italian": "Brr Brr Patapim"
     },
     {
       "id": 7,
       "name": "Чимпанзини Бананини",
-      "description": "Половина банана, половина шимпанзе, кожа жёлтая с банановой текстурой, голова обезьяны с глупым выражением. Сидит на пальме, держит банан, жуя его. Фон: яркие джунгли с цветущими орхидеями, солнечные лучи пробиваются сквозь листву. Стиль: поп-арт с яркими цветами.",
+      "description": "Гибрид банана и шимпанзе, жёлтая кожа с банановой текстурой, голова обезьяны с глупым выражением. Сидит на пальме, жуёт банан. Яркие джунгли, орхидеи, солнечные лучи. Стиль: поп-арт, яркие цвета.",
       "slogan": "Banana bella, che figata!",
-      "tiktok_phrase": "Banana challenge, accipicchia, vai col trend!"
+      "tiktok_phrase": "Chimp banan, mangio e chill, accipicchia!",
+      "name_english": "Chimpanzee Bananini",
+      "name_italian": "Scimpanzé Bananini"
     },
     {
       "id": 8,
       "name": "Бомбомбини Гусини",
-      "description": "Гусь, скрещённый с реактивным истребителем, голова белого гуся с оранжевым клювом, тело — металлический корпус с турбинами. На голове пилотская каска, крылья с перьями. Летит в облаках, оставляя дымный след. Фон: голубое небо с пушистыми облаками, вдали видны горы. Стиль: милитари с элементами AI-арта.",
+      "description": "Гусь, скрещённый с истребителем, голова гуся с оранжевым клювом, металлический корпус с турбинами, пилотская каска, крылья с перьями. Летит в облаках, дымный след, голубое небо, горы вдали. Стиль: милитари, AI-арт.",
       "slogan": "Porco volo, che potenza!",
-      "tiktok_phrase": "Volo in live, dov’è la sub, cavolo?!"
+      "tiktok_phrase": "Bombo gufo, volo nei cieli, cavolo!",
+      "name_english": "Bombini Goose",
+      "name_italian": "Oca Bombini"
     },
     {
       "id": 9,
       "name": "Капучино Ассасино",
-      "description": "Чашка каппучино с человеческими ногами в пуантах, на чашке женское лицо с хитрой улыбкой. В одной руке нож, в другой — кофейная ложка. Танцует на сцене с красными бархатными занавесками. Фон: театр с золотыми украшениями, кофейные зёрна падают вокруг. Стиль: ретро-театр с сюрреализмом.",
+      "description": "Чашка каппучино с женским лицом, хитрая улыбка, ноги в пуантах, держит нож и кофейную ложку. Танцует на сцене с красными занавесками, театр с золотыми украшениями, падают кофейные зёрна. Стиль: ретро-театр, сюрреализм.",
       "slogan": "Caffè mortale, che classe!",
-      "tiktok_phrase": "Caffè e coltello, accipicchia, che drop!"
+      "tiktok_phrase": "Cappuccino, danza col coltello, accipicchia!",
+      "name_english": "Cappuccino Assassin",
+      "name_italian": "Cappuccino Assassino"
     },
     {
       "id": 10,
       "name": "Триппи Троппи",
-      "description": "Тройной гибрид: креветка, кот и рыба. Тело креветки с кошачьей шерстью, голова рыбы с кошачьими усами, глаза разноцветные. Плавает в сюрреалистичном океане с неоновыми кораллами. Фон: подводный мир с психоделическими цветами, пузыри и светящиеся водоросли. Стиль: абсурдный с психоделическими эффектами.",
+      "description": "Гибрид креветки, кота и рыбы, тело креветки с кошачьей шерстью, голова рыбы с усами, разноцветные глаза. Плавает в океане с неоновыми кораллами, пузыри, светящиеся водоросли. Стиль: психоделический, абсурдный.",
       "slogan": "¡Qué trip, madre mía!",
-      "tiktok_phrase": "Sott’acqua tuso, niente cringe, cavolo!"
+      "tiktok_phrase": "Trippi, nuoto nel trip, cavolo!",
+      "name_english": "Trippy Troppy",
+      "name_italian": "Trippy Troppy"
     },
     {
       "id": 11,
       "name": "Фриго Камело",
-      "description": "Верблюд, скрещённый с холодильником, горбы — дверцы холодильника, из которых торчат бутылки воды. Шерсть песочного цвета, глаза сонные. Идёт по пустыне с барханами. Фон: палящее солнце, миражное небо, вдали виден оазис. Стиль: комичный сюрреализм.",
+      "description": "Верблюд с холодильниками вместо горбов, бутылки воды торчат, песочная шерсть, сонные глаза. Идёт по пустыне с барханами, палящее солнце, миражное небо, оазис вдали. Стиль: комичный сюрреализм.",
       "slogan": "Fresco camel, che figo!",
-      "tiktok_phrase": "Acqua nei gobbi, accipicchia, che sponsor!"
+      "tiktok_phrase": "Frigo camel, acqua fresca, accipicchia!",
+      "name_english": "Fridge Camel",
+      "name_italian": "Cammello Frigo"
     },
     {
       "id": 12,
       "name": "Ла Вака Сатурно Сатурнита",
-      "description": "Корова с кольцами Сатурна вокруг тела, рога светятся звёздным светом, шерсть чёрная с белыми пятнами. Стоит на космической платформе. Фон: звёздное небо с галактиками, планеты парят вокруг. Стиль: космический фантастический.",
+      "description": "Корова с кольцами Сатурна вокруг тела, светящиеся рога, чёрная шерсть с белыми пятнами. Стоит на космической платформе, звёздное небо, галактики, парящие планеты. Стиль: космический фантастический.",
       "slogan": "Vaca cosmica, porca miseria!",
-      "tiktok_phrase": "Muu nello spazio, cavolo, che vibe!"
+      "tiktok_phrase": "Vaca Saturno, muu nello spazio, cavolo!",
+      "name_english": "Saturn Cow",
+      "name_italian": "Vacca Saturno"
     },
     {
       "id": 13,
       "name": "Балерина Каппучина",
-      "description": "Чашка каппучино в белой балетной пачке, с кофейной пенкой вместо волос, лицо с доброй улыбкой. Танцует на зеркальном полу в балетном зале. Фон: зал с хрустальными люстрами, лепнина на стенах. Стиль: классический с сюрреализмом.",
+      "description": "Чашка каппучино в белой балетной пачке, кофейная пенка вместо волос, добрая улыбка. Танцует на зеркальном полу в балетном зале, хрустальные люстры, лепнина. Стиль: классический сюрреализм.",
       "slogan": "Ballerina dolce, che bellezza!",
-      "tiktok_phrase": "Caffè e punte, dov’è l’hype, accipicchia?!"
+      "tiktok_phrase": "Ballerina caffè, danza dolce, accipicchia!",
+      "name_english": "Cappuccino Ballerina",
+      "name_italian": "Ballerina Cappuccino"
     },
     {
       "id": 14,
       "name": "У Дин Дин Дин Дин Дун Ма Дин Дин Дин Дун",
-      "description": "Динозавр с телом тираннозавра, покрыт музыкальными нотами, в лапах бубен. Танцует в джунглях с огромными папоротниками. Фон: закатное небо с ритмичными облаками, звуковые волны в воздухе. Стиль: ритмичный сюрреализм.",
+      "description": "Тираннозавр, покрытый музыкальными нотами, держит бубен, танцует в джунглях с папоротниками. Закатное небо, ритмичные облака, звуковые волны. Стиль: ритмичный сюрреализм.",
       "slogan": "Dino ritmo, che botto!",
-      "tiktok_phrase": "Tamburo in zampa, accipicchia, vai col trend!"
+      "tiktok_phrase": "Din din, ritmo nella giungla, accipicchia!",
+      "name_english": "Din Din Din Dun",
+      "name_italian": "Din Din Din Dun"
     },
     {
       "id": 15,
       "name": "Трулимеро Труличина",
-      "description": "Гибрид трюфеля и кота, тело в форме гриба с кошачьей шерстью, глаза большие и блестящие. Сидит в лесу на мохнатом пне. Фон: тёмный лес с светящимися грибами, лунный свет. Стиль: мистический с элементами фэнтези.",
+      "description": "Гибрид трюфеля и кота, грибное тело с кошачьей шерстью, большие блестящие глаза. Сидит на мохнатом пне в тёмном лесу, светящиеся грибы, лунный свет. Стиль: мистический фэнтези.",
       "slogan": "Gatto fungo, che magia!",
-      "tiktok_phrase": "Miao nel bosco, cavolo, che mistica!"
+      "tiktok_phrase": "Trufi miao, magia nel bosco, cavolo!",
+      "name_english": "Truffle Cat",
+      "name_italian": "Gatto Tartufo"
     },
     {
       "id": 16,
       "name": "Гарамараман дан Мадудунгдунг так Тунтунг Перкунтунг",
-      "description": "Хаотичный гибрид: осьминог, барабан и змея. Тело змеи с щупальцами, на голове барабан, из которого торчат палочки. Ползёт по вулканической местности. Фон: лава и дым, красное небо. Стиль: хаотичный сюрреализм.",
+      "description": "Гибрид осьминога, змеи и барабана, змеиное тело с щупальцами, барабан на голове с палочками. Ползёт по вулканической местности, лава, дым, красное небо. Стиль: хаотичный сюрреализм.",
       "slogan": "¡Qué caos, por dios!",
-      "tiktok_phrase": "Tamburo in vulcano, accipicchia, che caos!"
+      "tiktok_phrase": "Garama dung, caos nel vulcano, accipicchia!",
+      "name_english": "Garama Madudung",
+      "name_italian": "Garama Madudung"
     },
     {
       "id": 17,
       "name": "Жирафа Целестре",
-      "description": "Жирафа с шерстью, покрытой звёздами, шея длинная, светится голубым. Стоит на облаке в космосе. Фон: галактика с разноцветными звёздами, туманности вокруг. Стиль: космический фэнтези.",
+      "description": "Жирафа с шерстью из звёзд, длинная шея светится голубым. Стоит на облаке в космосе, галактика, разноцветные звёзды, туманности. Стиль: космический фэнтези.",
       "slogan": "Giraffa stellare, che sogno!",
-      "tiktok_phrase": "Collo di stelle, cavolo, che cosmo!"
+      "tiktok_phrase": "Giraffa stella, collo cosmico, cavolo!",
+      "name_english": "Celestial Giraffe",
+      "name_italian": "Giraffa Celeste"
     },
     {
       "id": 18,
       "name": "Бобрито Бандито",
-      "description": "Бобёр в чёрном костюме мафиози, с винтовкой и сигарой, глаза в тёмных очках. Стоит в переулке с деревянными ящиками. Фон: ночной город с неоновыми вывесками, дождь. Стиль: гангстерский нуар.",
+      "description": "Бобёр в костюме мафиози, тёмные очки, сигара, держит винтовку. Стоит в переулке с ящиками, ночной город, неоновые вывески, дождь. Стиль: гангстерский нуар.",
       "slogan": "Castoro mafioso, che duro!",
-      "tiktok_phrase": "Sigaro e boom, cavolo, che rispetto!"
+      "tiktok_phrase": "Bobrito, sigaro e boss, cavolo!",
+      "name_english": "Bandit Beaver",
+      "name_italian": "Castoro Bandito"
     },
     {
       "id": 19,
       "name": "Фрули Фрула",
-      "description": "Гибрид клубники и лягушки, тело красное с семечками, лапы лягушачьи. Сидит на листе кувшинки в пруду. Фон: тропический пруд с лотосами, закатное солнце. Стиль: яркий тропический.",
+      "description": "Гибрид клубники и лягушки, красное тело с семечками, лягушачьи лапы. Сидит на кувшинке в тропическом пруду, лотосы, закатное солнце. Стиль: яркий тропический.",
       "slogan": "Rana fragola, che dolce!",
-      "tiktok_phrase": "Qua con fragola, accipicchia, che vibe!"
+      "tiktok_phrase": "Fruli, salto nella fragola, accipicchia!",
+      "name_english": "Strawberry Frog",
+      "name_italian": "Rana Fragola"
     },
     {
       "id": 20,
       "name": "Та Та Та Та Та Та Та Та Та Та Та Сахур",
-      "description": "Полено с ритмичным лицом, глаза мигают в такт, в руках бубен. Стоит в пустынном городе. Фон: ночное небо с неоновыми вывесками, песок на улицах. Стиль: мрачный ритмичный.",
+      "description": "Полено с ритмичным лицом, мигающие глаза, держит бубен. Стоит в пустынном городе, неоновые вывески, песок на улицах, ночное небо. Стиль: мрачный ритмичный.",
       "slogan": "Legno ritmico, che vibe!",
-      "tiktok_phrase": "Tamburo in trend, cavolo, che ritmo!"
+      "tiktok_phrase": "Ta ta ta, ritmo nel deserto, cavolo!",
+      "name_english": "Ta Ta Ta Sahur",
+      "name_italian": "Ta Ta Ta Sahur"
     },
     {
       "id": 21,
       "name": "Пот Хотспот",
-      "description": "Кастрюля с антеннами Wi-Fi, лицо с хитрой улыбкой, ножки металлические. Стоит на крыше небоскрёба. Фон: ночной мегаполис с неоновыми огнями, звёзды. Стиль: киберпанк с комичным уклоном.",
+      "description": "Кастрюля с Wi-Fi антеннами, хитрая улыбка, металлические ножки. Стоит на крыше небоскрёба, ночной мегаполис, неоновые огни, звёзды. Стиль: киберпанк, комичный.",
       "slogan": "Pentola Wi-Fi, che fissa!",
-      "tiktok_phrase": "Wifi a palla, accipicchia, che segnale!"
+      "tiktok_phrase": "Pot hotspot, segnale in città, accipicchia!",
+      "name_english": "Pot Hotspot",
+      "name_italian": "Pentola Hotspot"
     },
     {
       "id": 22,
       "name": "Брри Брри Бикус Дикус Бомбикус",
-      "description": "Пчела с телом, усыпанным бомбами, крылья металлические, жало светится. Летает над полем с подсолнухами. Фон: солнечное небо с дымными следами. Стиль: милитари-поп-арт.",
+      "description": "Пчела с телом из бомб, металлические крылья, светящееся жало. Летает над полем подсолнухов, солнечное небо, дымные следы. Стиль: милитари-поп-арт.",
       "slogan": "Ape esplosiva, che botto!",
-      "tiktok_phrase": "Bombe in alveare, cavolo, che challenge!"
+      "tiktok_phrase": "Brri bombo, volo esplosivo, cavolo!",
+      "name_english": "Bombikus Bee",
+      "name_italian": "Ape Bombikus"
     },
     {
       "id": 23,
       "name": "Бурбалони Лулилолли",
-      "description": "Леденец в форме единорога, тело прозрачное с радужными разводами, рог светится. Скачет по облакам. Фон: розовое небо с сахарными звёздами. Стиль: сладкий сюрреализм.",
+      "description": "Леденец в форме единорога, прозрачное тело с радужными разводами, светящийся рог. Скачет по облакам, розовое небо, сахарные звёзды. Стиль: сладкий сюрреализм.",
       "slogan": "Unicorno dolce, che carino!",
-      "tiktok_phrase": "Zucchero vibe, accipicchia, che filtro!"
+      "tiktok_phrase": "Burbaloni, dolce nei cieli, accipicchia!",
+      "name_english": "Lollipop Unicorn",
+      "name_italian": "Unicorno Lecca-Lecca"
     },
     {
       "id": 24,
       "name": "Тальпа Ди Ферро",
-      "description": "Крот с металлической бронёй, глаза как прожекторы, когти стальные. Копает туннель под землёй. Фон: подземные пещеры с кристаллами, тусклый свет. Стиль: стимпанк с элементами фэнтези.",
+      "description": "Крот в металлической броне, глаза-прожекторы, стальные когти. Копает туннель в подземных пещерах с кристаллами, тусклый свет. Стиль: стимпанк-фэнтези.",
       "slogan": "Talpa d’acciaio, che forza!",
-      "tiktok_phrase": "Scavo i trend, cavolo, che vibe!"
+      "tiktok_phrase": "Talpa ferro, scavo profondo, cavolo!",
+      "name_english": "Iron Mole",
+      "name_italian": "Talpa di Ferro"
     },
     {
       "id": 25,
       "name": "Блюберрини Октопуссини",
-      "description": "Осьминог с телом из голубики, щупальца покрыты ягодами, глаза большие и блестящие. Плавает в океане с ягодными рифами. Фон: подводный мир с пузырьками и неоновыми кораллами. Стиль: сюрреалистичный морской.",
+      "description": "Осьминог с телом из голубики, щупальца с ягодами, большие блестящие глаза. Плавает в океане с ягодными рифами, пузырьки, неоновые кораллы. Стиль: сюрреалистичный морской.",
       "slogan": "Polpo mirtillo, che figo!",
-      "tiktok_phrase": "Mirtilli in mare, accipicchia, che drop!"
+      "tiktok_phrase": "Blueberry polpo, nuoto nei mirtilli, accipicchia!",
+      "name_english": "Blueberry Octopus",
+      "name_italian": "Polpo Mirtillo"
     },
     {
       "id": 26,
       "name": "Глорбо Фруттодрилло",
-      "description": "Фруктовый бур, тело из ананаса, лезвие из манго, глаза на стеблях. Бурит фруктовый сад. Фон: тропический сад с экзотическими фруктами, яркое солнце. Стиль: яркий тропический.",
+      "description": "Фруктовый бур, тело из ананаса, лезвие из манго, глаза на стеблях. Бурит тропический сад с экзотическими фруктами, яркое солнце. Стиль: яркий тропический.",
       "slogan": "Trapano frutta, che succo!",
-      "tiktok_phrase": "Foro ananas, cavolo, che succo!"
+      "tiktok_phrase": "Glorbo, foro ananas, cavolo!",
+      "name_english": "Fruit Drill",
+      "name_italian": "Trapano Frutta"
     },
     {
       "id": 27,
       "name": "Иль Както Хипопотамо",
-      "description": "Гиппопотам с колючей кактусовой кожей, пасть полна шипов, глаза сонные. Лежит в болоте с кактусами. Фон: пустынное болото с сухими деревьями, закат. Стиль: сюрреалистичный пустынный.",
+      "description": "Гиппопотам с кактусовой колючей кожей, пасть с шипами, сонные глаза. Лежит в болоте с кактусами, пустынное болото, сухие деревья, закат. Стиль: сюрреалистичный пустынный.",
       "slogan": "Ippo cactus, che strano!",
-      "tiktok_phrase": "Chillo nel fango, dov’è il filtro, accipicchia?!"
+      "tiktok_phrase": "Cacto ippo, chillo nel fango, accipicchia!",
+      "name_english": "Cactus Hippo",
+      "name_italian": "Ippopotamo Cactus"
     },
     {
       "id": 28,
       "name": "Шеф Крабракадабра",
-      "description": "Краб-повар с магическим посохом, клешни держат сковородку, глаза мигают. Готовит на пляжной кухне. Фон: тропический пляж с пальмами, закатное море. Стиль: магический тропический.",
+      "description": "Краб-повар с магическим посохом, клешни держат сковородку, мигающие глаза. Готовит на пляжной кухне, тропический пляж, пальмы, закатное море. Стиль: магический тропический.",
       "slogan": "Granchio chef, che magia!",
-      "tiktok_phrase": "Fritto il vibe, cavolo, che ricetta!"
+      "tiktok_phrase": "Crab chef, cucina magia, cavolo!",
+      "name_english": "Crab Chef",
+      "name_italian": "Granchio Chef"
     },
     {
       "id": 29,
       "name": "Абонно Шимпазинно",
-      "description": "Шимпанзе с телом, усыпанным закусками (чипсы, орешки), глаза жадные. Сидит на фуршетном столе. Фон: вечеринка с шариками и гирляндами. Стиль: праздничный поп-арт.",
+      "description": "Шимпанзе, покрытое закусками (чипсы, орешки), жадные глаза. Сидит на фуршетном столе, вечеринка, шарики, гирлянды. Стиль: праздничный поп-арт.",
       "slogan": "Scimpanzé snack, che fame!",
-      "tiktok_phrase": "Patatine in trend, accipicchia, che festa!"
+      "tiktok_phrase": "Chimp snack, patatine a festa, accipicchia!",
+      "name_english": "Snack Chimpanzee",
+      "name_italian": "Scimpanzé Snack"
     },
     {
       "id": 30,
       "name": "Свинино Бомбондино",
-      "description": "Свинья с телом, усыпанным бомбами, копыта в армейских ботинках, глаза хитрые. Идёт по разрушенному полю. Фон: дымное небо с воронками от взрывов. Стиль: милитари с комичным уклоном.",
+      "description": "Свинья с телом из бомб, армейские ботинки, хитрые глаза. Идёт по разрушенному полю, дымное небо, воронки от взрывов. Стиль: милитари, комичный.",
       "slogan": "Maiale boom, che botto!",
-      "tiktok_phrase": "Bombe nel porcile, cavolo, che movida!"
+      "tiktok_phrase": "Svin bomb, boom nel campo, cavolo!",
+      "name_english": "Bomb Pig",
+      "name_italian": "Maiale Bomba"
     },
     {
       "id": 31,
       "name": "Бомбардиере Лучертола",
-      "description": "Ящерица с крыльями бомбардировщика, чешуя металлическая, хвост дымит. Летает над вулканом. Фон: огненное небо с лавой, чёрные тучи. Стиль: милитари-фэнтези.",
+      "description": "Ящерица с крыльями бомбардировщика, металлическая чешуя, дымящий хвост. Летает над вулканом, огненное небо, лава, чёрные тучи. Стиль: милитари-фэнтези.",
       "slogan": "Lucertola jet, che fuoco!",
-      "tiktok_phrase": "Volo sul lava, dov’è l’hype, accipicchia?!"
+      "tiktok_phrase": "Lizard jet, volo sul vulcano, accipicchia!",
+      "name_english": "Bomber Lizard",
+      "name_italian": "Lucertola Bombardiere"
     },
     {
       "id": 32,
       "name": "Ринодино Дилдорино",
-      "description": "Гибрид носорога и динозавра, два рога, чешуя с шипами, глаза яростные. Бежит по саванне. Фон: пыльное небо с акациями, закат. Стиль: эпический фэнтези.",
+      "description": "Гибрид носорога и динозавра, два рога, чешуя с шипами, яростные глаза. Бежит по саванне, пыльное небо, акации, закат. Стиль: эпический фэнтези.",
       "slogan": "Rino dino, che carica!",
-      "tiktok_phrase": "Corna in trend, cavolo, che carica!"
+      "tiktok_phrase": "Rinodino, carica in savana, cavolo!",
+      "name_english": "Rhinodino",
+      "name_italian": "Rinoceronte Dino"
     },
     {
       "id": 33,
       "name": "Трик Трак Барабум",
-      "description": "Поезд с лицом льва, вагоны покрыты мехом, дым из пасти. Мчится по пустынным рельсам. Фон: пустыня с кактусами, красное небо. Стиль: стимпанк с сюрреализмом.",
+      "description": "Поезд с лицом льва, вагоны с мехом, дым из пасти. Мчится по пустынным рельсам, пустыня, кактусы, красное небо. Стиль: стимпанк-сюрреализм.",
       "slogan": "Treno leone, che ruggito!",
-      "tiktok_phrase": "Corro nel deserto, accipicchia, che ruggito!"
+      "tiktok_phrase": "Trik trak, ruggito nel deserto, accipicchia!",
+      "name_english": "Trik Trak Barabum",
+      "name_italian": "Trik Trak Barabum"
     },
     {
       "id": 34,
       "name": "Централучи Нуклеаручи",
-      "description": "Атомная станция с лицом старика, трубы дымят, тело из бетона. Стоит в пустоши. Фон: радиоактивное небо с зелёными облаками. Стиль: постапокалиптический.",
+      "description": "Атомная станция с лицом старика, дымящие трубы, бетонное тело. Стоит в пустоши, радиоактивное небо, зелёные облака. Стиль: постапокалиптический.",
       "slogan": "Nucleare vecchio, che paura!",
-      "tiktok_phrase": "Radiazione vibe, cavolo, che filtro!"
+      "tiktok_phrase": "Nucleare, radiazione vibe, cavolo!",
+      "name_english": "Nuclear Central",
+      "name_italian": "Centrale Nucleare"
     },
     {
       "id": 35,
       "name": "Орангуттини Ананассини",
-      "description": "Орангутан с ананасовой кожей, шерсть с шипами, глаза добрые. Сидит на пальме. Фон: тропический лес с водопадами, закат. Стиль: тропический фэнтези.",
+      "description": "Орангутан с ананасовой кожей, шипастая шерсть, добрые глаза. Сидит на пальме, тропический лес, водопDotNetCore, водопады, закат. Стиль: тропический фэнтези.",
       "slogan": "Orango ananas, che dolce!",
-      "tiktok_phrase": "Ananas in giungla, accipicchia, che vibe!"
+      "tiktok_phrase": "Orango ananas, chill in giungla, accipicchia!",
+      "name_english": "Pineapple Orangutan",
+      "name_italian": "Orango Ananas"
     },
     {
       "id": 36,
       "name": "Эспрессона Сеньора",
-      "description": "Чашка эспрессо с женским лицом, в шляпке с пером, ножки в туфлях. Сидит в кафе. Фон: итальянское кафе с мозаичным полом, утреннее солнце. Стиль: ретро-итальянский.",
+      "description": "Чашка эспрессо с женским лицом, шляпка с пером, туфли на ножках. Сидит в итальянском кафе, мозаичный пол, утреннее солнце. Стиль: ретро-итальянский.",
       "slogan": "Espresso diva, che stile!",
-      "tiktok_phrase": "Espresso in trend, cavolo, che look!"
+      "tiktok_phrase": "Espressona, caffè con classe, cavolo!",
+      "name_english": "Espresso Lady",
+      "name_italian": "Signora Espresso"
     },
     {
       "id": 37,
       "name": "Зибра Зубра Зибралини",
-      "description": "Зебра с тройными полосами, рога как у буйвола, глаза яркие. Скачет по саванне. Фон: травяное поле с акациями, закатное небо. Стиль: экзотический фэнтези.",
+      "description": "Зебра с тройными полосами, рога буйвола, яркие глаза. Скачет по саванне, травяное поле, акации, закатное небо. Стиль: экзотический фэнтези.",
       "slogan": "Zebra tripla, che forza!",
-      "tiktok_phrase": "Strisce in moda, accipicchia, che corsa!"
+      "tiktok_phrase": "Zibra, strisce e corna, accipicchia!",
+      "name_english": "Triple Zebra",
+      "name_italian": "Zebra Tripla"
     },
     {
       "id": 38,
       "name": "Грайпусси Медусси",
-      "description": "Медуза с телом из виноградных гроздей, щупальца фиолетовые, глаза светятся. Плавает в подводном винограднике. Фон: океан с пузырьками, неоновые рифы. Стиль: морской сюрреализм.",
+      "description": "Медуза с телом из виноградных гроздей, фиолетовые щупальца, светящиеся глаза. Плавает в подводном винограднике, океан, пузырьки, неоновые рифы. Стиль: морской сюрреализм.",
       "slogan": "Medusa uva, che figata!",
-      "tiktok_phrase": "Uva in mare, cavolo, che vibe!"
+      "tiktok_phrase": "Medusa uva, nuoto nei vigneti, cavolo!",
+      "name_english": "Grape Jellyfish",
+      "name_italian": "Medusa Uva"
     },
     {
       "id": 39,
       "name": "Тигрруллини Ватермеллини",
-      "description": "Тигр с арбузной кожей, полосы зелёные, пасть с семечками. Лежит в джунглях. Фон: тропический лес с лианами, утренний туман. Стиль: тропический сюрреализм.",
+      "description": "Тигр с арбузной кожей, зелёные полосы, пасть с семечками. Лежит в джунглях, тропический лес, лианы, утренний туман. Стиль: тропический сюрреализм.",
       "slogan": "Tigre cocomero, che strano!",
-      "tiktok_phrase": "Cocomero in giungla, accipicchia, che ruggito!"
+      "tiktok_phrase": "Tigrulini, ruggito d’anguria, accipicchia!",
+      "name_english": "Watermelon Tiger",
+      "name_italian": "Tigre Cocomero"
     },
     {
       "id": 40,
       "name": "Пингвинито Фламинго",
-      "description": "Пингвин с розовыми крыльями фламинго, клюв длинный, глаза блестящие. Танцует на ледяном поле. Фон: арктическое небо с северным сиянием, лёд блестит. Стиль: ледяной фэнтези.",
+      "description": "Пингвин с розовыми крыльями фламинго, длинный клюв, блестящие глаза. Танцует на ледяном поле, арктическое небо, северное сияние, блестящий лёд. Стиль: ледяной фэнтези.",
       "slogan": "Pinguino rosa, che bello!",
-      "tiktok_phrase": "Ballo sul ghiaccio, cavolo, che drop!"
+      "tiktok_phrase": "Pingu flamingo, ballo sul ghiaccio, cavolo!",
+      "name_english": "Flamingo Penguin",
+      "name_italian": "Pinguino Fenicottero"
     },
     {
       "id": 41,
       "name": "Кальмарито Пиццерито",
-      "description": "Кальмар с пиццей вместо головы, щупальца держат сыр и пепперони. Плавает в море. Фон: подводная пиццерия с неоновыми вывесками. Стиль: комичный морской.",
+      "description": "Кальмар с пиццей вместо головы, щупальца с сыром и пепперони. Плавает в море, подводная пиццерия, неоновые вывески. Стиль: комичный морской.",
       "slogan": "Calamaro pizza, che fame!",
-      "tiktok_phrase": "Pizza in mare, accipicchia, che vibe!"
+      "tiktok_phrase": "Calmar pizza, nuoto con mozzarella, accipicchia!",
+      "name_english": "Pizza Squid",
+      "name_italian": "Calamaro Pizza"
     },
     {
       "id": 42,
       "name": "Торнадо Картофино",
-      "description": "Картофелина, вращающаяся как торнадо, глаза на стеблях, кожура шершавая. Летит над полем. Фон: сельская местность с сараями, бурное небо. Стиль: хаотичный сюрреализм.",
+      "description": "Картофелина в форме торнадо, глаза на стеблях, шершавая кожура. Летит над полем, сельская местность, сараи, бурное небо. Стиль: хаотичный сюрреализм.",
       "slogan": "Patata tornado, che casino!",
-      "tiktok_phrase": "Giro nei campi, cavolo, che caos!"
+      "tiktok_phrase": "Tornado patata, giro nei campi, cavolo!",
+      "name_english": "Tornado Potato",
+      "name_italian": "Patata Tornado"
     },
     {
       "id": 43,
       "name": "Ламантино Граффитино",
-      "description": "Ламантин с баллончиком краски, рисует граффити на подводных скалах. Кожа с узорами. Фон: подводный мир с кораллами, солнечные лучи. Стиль: художественный морской.",
+      "description": "Ламантин с баллончиком краски, рисует граффити на подводных скалах, узорчатая кожа. Подводный мир, кораллы, солнечные лучи. Стиль: художественный морской.",
       "slogan": "Lamantino arte, che figo!",
-      "tiktok_phrase": "Graffiti in mare, accipicchia, che stile!"
+      "tiktok_phrase": "Lamantino, graffiti sott’acqua, accipicchia!",
+      "name_english": "Graffiti Manatee",
+      "name_italian": "Lamantino Graffiti"
     },
     {
       "id": 44,
       "name": "Фрутапелло Джелато",
-      "description": "Фруктовое мороженое с ногами, рожок с клубникой и манго, глаза весёлые. Бежит по пляжу. Фон: тропический пляж с пальмами, закатное море. Стиль: яркий тропический.",
+      "description": "Фруктовое мороженое с ногами, рожок с клубникой и манго, весёлые глаза. Бежит по тропическому пляжу, пальмы, закатное море. Стиль: яркий тропический.",
       "slogan": "Gelato frutta, che dolce!",
-      "tiktok_phrase": "Gelato in trend, cavolo, che corsa!"
+      "tiktok_phrase": "Frutapello, corro col gelato, cavolo!",
+      "name_english": "Fruit Gelato",
+      "name_italian": "Gelato Frutta"
     },
     {
       "id": 45,
       "name": "Крокетто Ракетто",
-      "description": "Крокета, скрещённая с ракетой, поверхность хрустящая, сопла дымят. Летит в космосе. Фон: звёздное небо с астероидами, планеты вдали. Стиль: космический комичный.",
+      "description": "Крокета с ракетными соплами, хрустящая поверхность, дымит. Летит в космосе, звёздное небо, астероиды, планеты. Стиль: космический комичный.",
       "slogan": "Crocchetta razzo, che volo!",
-      "tiktok_phrase": "Volo in cosmo, accipicchia, che drop!"
+      "tiktok_phrase": "Croketto, volo nello spazio, accipicchia!",
+      "name_english": "Rocket Croquette",
+      "name_italian": "Crocchetta Razzo"
     },
     {
       "id": 46,
       "name": "Тим Чиз",
-      "description": "Мышь с человеческим лицом в деловом костюме, глаза хитрые, держит сырный нож. Стоит в городском переулке с мусорными баками. Фон: ночной город с неоновыми вывесками, дождь. Стиль: нуар с элементами абсурда.",
+      "description": "Мышь с человеческим лицом, деловой костюм, хитрые глаза, сырный нож. Стоит в переулке, мусорные баки, ночной город, неоновые вывески, дождь. Стиль: нуар, абсурд.",
       "slogan": "Topo boss, che furbo!",
-      "tiktok_phrase": "Formaggio in tasca, cavolo, che vibe!"
+      "tiktok_phrase": "Tim Chiz, formaggio e affari, cavolo!",
+      "name_english": "Tim Cheese",
+      "name_italian": "Topo Formaggio"
     },
     {
       "id": 47,
       "name": "Аэромucca Арматa",
-      "description": "Корова с крыльями самолёта, тело покрыто бронёй, рога стальные. Летает над полем боя. Фон: облака с дымными следами, вдали видны взрывы. Стиль: милитари-фэнтези.",
+      "description": "Корова с крыльями самолёта, бронированное тело, стальные рога. Летает над полем боя, облака, дымные следы, взрывы вдали. Стиль: милитари-фэнтези.",
       "slogan": "Mucca jet, che forza!",
-      "tiktok_phrase": "Muu sul campo, accipicchia, che movida!"
+      "tiktok_phrase": "Aeromucca, muu in battaglia, accipicchia!",
+      "name_english": "Armored Aerocow",
+      "name_italian": "Mucca Armata"
     },
     {
       "id": 48,
       "name": "Аполлино Каппучино",
-      "description": "Чашка каппучино с золотыми крыльями Аполлона, пенка сияет, лицо мифическое. Парит над мраморным храмом. Фон: облака с золотым светом, колонны храма. Стиль: мифологический с кофейной эстетикой.",
+      "description": "Чашка каппучино с золотыми крыльями, сияющая пенка, мифическое лицо. Парит над мраморным храмом, облака, золотой свет, колонны. Стиль: мифологический, кофейный.",
       "slogan": "Caffè divino, che splendore!",
-      "tiktok_phrase": "Caffè con dei, cavolo, che look!"
+      "tiktok_phrase": "Apollino, caffè tra gli dei, cavolo!",
+      "name_english": "Apollo Cappuccino",
+      "name_italian": "Apollino Cappuccino"
     }
   ]
 }
