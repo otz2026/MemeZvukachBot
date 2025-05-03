@@ -61,15 +61,6 @@ EMOJIS = {
     "meme": "🦄",
     "vibe": "🦁"
 }
-EMOJI_MAP = {
-    "акула": "🦈", "кот": "😺", "собака": "🐶", "динозавр": "🦖",
-    "поезд": "🚂", "ракета": "🚀", "алкоголь": "🍺", "танц": "🕺",
-    "крича": "🗣️", "бомба": "💣", "космос": "🪐", "пустыня": "🏜️",
-    "город": "🏙️", "лес": "🌴", "море": "🌊", "еда": "🍕",
-    "фрукт": "🍍", "кофей": "☕", "магия": "🧙", "взрыв": "💥",
-    "кринж": "😹", "угар": "🎉", "жесть": "🦁", "абсурд": "🦄",
-    "похер": "🦊", "пушка": "🌟"
-}
 
 # Меню с эмодзи
 MENU_KEYBOARD = ReplyKeyboardMarkup(
@@ -80,9 +71,10 @@ MENU_KEYBOARD = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-# Инициализация g4f клиента для поиска фото
+# Инициализация g4f клиента
 async_client = AsyncClient()
-PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Верни только одну ссылку на фото этого животного или на сайт с ним. Если фото не найдено, верни 'Фото не найдено 😕'. Ничего не объясняй, только ссылка или указанный текст."""
+PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото или сайт с этим мемом, используя английское и русское название. Верни только одну ссылку на фото или сайт. Если ничего не найдено, верни 'Фото не найдено 😕'. Ничего не объясняй, только ссылка или указанный текст."""
+EMOJI_PRESET = """Ты бот, который подбирает мемный эмодзи для итальянского мема. Верни только один эмодзи, без текста, подходящий для мема с названием {name_english} ({name})."""
 
 # Управление временными файлами
 @contextmanager
@@ -100,24 +92,13 @@ def temp_audio_file():
         except Exception as e:
             logger.warning(f"Failed to delete temp file {mp3_path}: {e}")
 
-# Генерация эмодзи по описанию
-def generate_emoji(description):
-    description = description.lower()
-    for word, emoji in EMOJI_MAP.items():
-        if word in description:
-            logger.info(f"Selected emoji '{emoji}' for keyword '{word}' in description")
-            return emoji
-    default_emoji = random.choice(["🦄", "🌟", "🦁", "🦊", "🎸"])
-    logger.info(f"No matching keyword found, selected default emoji '{default_emoji}'")
-    return default_emoji
-
-# Генерация фразы
+# Генерация мемной фразы
 def generate_funny_phrase(user_id):
     if user_id not in user_phrase_history:
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй короткую, остроумную фразу на русском в стиле мемного юмора, не длиннее 50 символов."
+    prompt = "Сгенерируй ультра-смешную мемную фразу в стиле TikTok, до 50 символов, с итальянским вайбом."
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
@@ -141,10 +122,10 @@ def generate_funny_phrase(user_id):
             logger.error(f"Phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}")
     
     backup_phrases = [
-        "Шедевр в эфире! 🌟",
-        "Мемный взрыв! 🎉",
-        "Вайб на миллион! 🦁",
-        "Это просто пушка! 🦄"
+        "Эщкере, синьор! 🌟",
+        "Туса на миллион! 🎉",
+        "Взлетаем, пацаны! 🦁",
+        "Это пушка, бро! 🦄"
     ]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
     if not available_phrases:
@@ -157,10 +138,33 @@ def generate_funny_phrase(user_id):
     logger.info(f"Selected backup phrase for user {user_id}: {phrase}")
     return phrase
 
+# Поиск эмодзи через g4f
+async def find_meme_emoji(meme_name_english, meme_name_russian):
+    try:
+        query = f"{meme_name_english} ({meme_name_russian})"
+        response = await async_client.chat.completions.create(
+            model="searchgpt",
+            provider=g4f.Provider.PollinationsAI,
+            messages=[
+                {"role": "system", "content": EMOJI_PRESET},
+                {"role": "user", "content": query}
+            ],
+            web_search=False,
+            stream=False
+        )
+        emoji = response.choices[0].message.content.strip()
+        if emoji and len(emoji) <= 4:  # Проверка на валидный эмодзи
+            logger.info(f"Emoji for {query}: {emoji}")
+            return emoji
+        logger.warning(f"Invalid emoji for {query}: {emoji}")
+    except Exception as e:
+        logger.error(f"Emoji search error for {query}: {e}")
+    return random.choice(["🦄", "🌟", "🦁", "🎸", "🦚"])
+
 # Поиск фото через g4f
 async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
-        query = f"{meme_name_english} ({meme_name_russian})"
+        query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
             model="searchgpt",
             provider=g4f.Provider.PollinationsAI,
@@ -168,12 +172,25 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
                 {"role": "system", "content": PHOTO_PRESET},
                 {"role": "user", "content": query}
             ],
-            web_search=False,
+            web_search=True,
             stream=False
         )
         photo_url = response.choices[0].message.content.strip()
         logger.info(f"Photo URL for {query}: {photo_url}")
-        return photo_url if photo_url != "Фото не найдено 😕" else "Фото не найдено 😕"
+        if photo_url != "Фото не найдено 😕":
+            return photo_url
+        
+        # Запасной вариант: Google Images
+        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}"
+        google_response = requests.get(google_url, timeout=10)
+        if google_response.status_code == 200:
+            import re
+            match = re.search(r'<img[^>]+src="([^">]+)"', google_response.text)
+            if match:
+                logger.info(f"Google Images URL for {query}: {match.group(1)}")
+                return match.group(1)
+        
+        return "Фото не найдено 😕"
     except Exception as e:
         logger.error(f"Photo search error for {query}: {e}")
         return "Фото не найдено 😕"
@@ -236,8 +253,8 @@ async def generate_meme_audio(text, filename, funny_phrase):
     effect_name, effect_url = sound_effect
     
     prompt = (
-        f"Озвучь с итальянским вайбом, энергично и с юмором: {text}. "
-        f"Добавь короткую фразу: '{funny_phrase}'"
+        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}. "
+        f"Добавь фразу: '{funny_phrase}'"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=echo&attitude=excited"
@@ -262,8 +279,9 @@ async def generate_meme_audio(text, filename, funny_phrase):
                 if download_meme_sound(effect_url, effect_file.name):
                     try:
                         main_audio = AudioSegment.from_mp3(filename)
-                        effect_audio = AudioSegment.from_mp3(effect_file.name)
+                        effect_audio = AudioSegment.from_mp3(effect_file.name) + 5  # Увеличить громкость
                         combined = main_audio + effect_audio
+                        await asyncio.sleep(0.5)  # Задержка для стабильности
                         combined.export(filename, format="mp3")
                         logger.info(f"Successfully added meme sound effect '{effect_name}' to {filename}")
                     except Exception as e:
@@ -283,9 +301,9 @@ async def generate_meme_audio(text, filename, funny_phrase):
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Готов к мемному вайбу! 🚀🦄\n\n"
-        "Назови мем или выбери случайный.\n"
-        "Погнали за шедеврами! 🎸",
+        f"Врываемся в мемный вайб! 🚀🦄\n\n"
+        "Назови мем или выбери рандом.\n"
+        "Го за шедеврами! 🎸🌟",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -293,17 +311,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Гид по Мемам 🔍🌟\n\n"
-        "Я бот, зажигающий мемные вайбы с итальянским шармом 🎸\n\n"
-        "Что умею:\n"
+        "Я бот, зажигающий TikTok-вайб с итальянскими мемами! 🦁🎸\n\n"
+        "Что могу:\n"
         "- Найти мем по названию или описанию\n"
-        "- Выдать случайный шедевр\n"
-        "- Озвучить названия с прикольным акцентом\n"
-        "- Показать фото мемных героев\n\n"
+        "- Выдать рандомный шедевр\n"
+        "- Озвучить с пафосным TikTok-вайбом\n"
+        "- Показать фотки мемных героев\n\n"
         "Команды:\n"
-        "/start — старт вайба\n"
-        "/help — этот гид\n"
-        "/random — случайный мем\n\n"
-        "Готов к движу? 🦁🎉",
+        "/start — врываемся\n"
+        "/help — этот вайб\n"
+        "/random — рандомный мем\n\n"
+        "Погнали за движем! 🦚🎉",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -332,7 +350,7 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Random meme error: {e}")
         await update.message.reply_text(
-            f"Мем ускользнул! 😕🦁 Пробуй ещё!",
+            f"Мем ускользнул! 😕🦁 Го ещё раз!",
             reply_markup=MENU_KEYBOARD
         )
 
@@ -393,17 +411,17 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Подготовка ответа
 async def prepare_meme_response(meme, user_id):
-    emoji = generate_emoji(meme["description"])
     funny_phrase = generate_funny_phrase(user_id)
     voice_text = f"{meme['name_english']}"
     
-    logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id} with emoji '{emoji}'")
+    logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id}")
     
-    # Параллельное выполнение генерации аудио и поиска фото
+    # Параллельное выполнение задач
     audio_task = asyncio.create_task(generate_meme_audio(voice_text, f"{AUDIO_DIR}/temp_{user_id}.mp3", funny_phrase))
     photo_task = asyncio.create_task(find_meme_photo(meme["name_english"], meme["name"]))
+    emoji_task = asyncio.create_task(find_meme_emoji(meme["name_english"], meme["name"]))
     
-    audio_success, photo_url = await asyncio.gather(audio_task, photo_task)
+    audio_success, photo_url, emoji = await asyncio.gather(audio_task, photo_task, emoji_task)
     
     try:
         return {
@@ -415,13 +433,13 @@ async def prepare_meme_response(meme, user_id):
                 f"{meme['name_english']}, {meme['name']}\n\n"
                 f"{meme['description']}\n\n"
                 f"{photo_url}\n\n"
-                f"{funny_phrase} Ещё мем? 🌟"
+                f"{funny_phrase} Ещё мем? 🌟🦚"
             ),
             "text": (
                 f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
                 f"{meme['description']}\n\n"
                 f"{photo_url}\n\n"
-                f"{funny_phrase} Аудио не вышло, но вайб есть! 🎉 Ещё?"
+                f"{funny_phrase} Аудио не вайбнуло, но мем топ! 🎉🦁"
             ),
             "reply_markup": MENU_KEYBOARD
         }
@@ -433,7 +451,7 @@ async def prepare_meme_response(meme, user_id):
                 f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
                 f"{meme['description']}\n\n"
                 f"{photo_url}\n\n"
-                f"{funny_phrase} Мем без озвучки! 😕 Ещё?"
+                f"{funny_phrase} Мем без озвучки! 😕 Ещё вайб? 🌟"
             ),
             "reply_markup": MENU_KEYBOARD
         }
@@ -461,12 +479,12 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
             )
     except Exception as e:
         logger.error(f"Send meme response error: {e}")
-        emoji = generate_emoji(meme["description"])
+        emoji = random.choice(["🦄", "🌟", "🦁", "🎸", "🦚"])
         await update.message.reply_text(
             f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
             f"{meme['description']}\n\n"
             f"Фото не найдено 😕\n\n"
-            f"Мем без вайба! 😕 Погнали дальше? 🌟",
+            f"Мем без вайба! 😕 Го дальше? 🌟🦚",
             reply_markup=MENU_KEYBOARD
         )
 
@@ -490,10 +508,10 @@ def main():
     app.add_handler(CommandHandler("random", random_meme))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     
-    logger.info("Бот готов зажигать вайб!")
+    logger.info("Бот готов зажигать TikTok-вайб!")
     keep_alive()
     try:
-        app.run_polling(allowed_updates=Update.ALL_TYPES)
+        app.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
     except Exception as e:
         logger.error(f"Polling error: {e}")
         raise
