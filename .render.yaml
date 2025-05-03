@@ -1,16 +1,12 @@
 services:
   - type: web
-    name: memezvukach-bot
+    name: MemeZvukachBot
     env: python
-    region: oregon
     plan: free
-    branch: main
-    buildCommand: |
-      apt-get update && apt-get install -y ffmpeg
-      pip install -r requirements.txt
+    buildCommand: apt-get update && apt-get install -y ffmpeg && pip install -r requirements.txt
     startCommand: python main.py
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
       - key: TELEGRAM_TOKEN
         sync: false
-      - key: PYTHON_VERSION
-        value: 3.9
