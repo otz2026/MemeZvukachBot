@@ -36,7 +36,11 @@ MEME_SOUNDS = [
     ("scream", "https://freesound.org/data/previews/269/269764_4299048-lq.mp3"),  # Громкий ор
     ("burp", "https://freesound.org/data/previews/136/136181_2396973-lq.mp3"),   # Рыгание
     ("cry", "https://freesound.org/data/previews/193/193353_2431407-lq.mp3"),    # Плач
-    ("laugh", "https://freesound.org/data/previews/203/203714_2619675-lq.mp3")   # Угарный смех
+    ("laugh", "https://freesound.org/data/previews/203/203714_2619675-lq.mp3"),  # Угарный смех
+    ("drake", "https://freesound.org/data/previews/364/364918_5910492-lq.mp3"),  # Drake "Yawn"
+    ("airhorn", "https://freesound.org/data/previews/154/154955_2701569-lq.mp3"), # Airhorn
+    ("vine_boom", "https://freesound.org/data/previews/622/622181_11866629-lq.mp3"), # Vine Boom
+    ("anime_wow", "https://freesound.org/data/previews/156/156859_2538033-lq.mp3") # Anime Wow
 ]
 
 # История фраз для каждого пользователя
@@ -107,12 +111,12 @@ def generate_funny_phrase(user_id):
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня', 'пипец'), без жёсткого мата, угарную, не длиннее 50 символов."
+    prompt = "Сгенерируй короткую, дерзкую, абсурдную фразу на русском в стиле TikTok с лёгким матом (например, 'ёпт', 'херня', 'пипец', 'блин'), без жёсткого мата, угарную, не длиннее 50 символов."
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
-    logger.info(f"Sending request for funny phrase for user {user_id}: {url}")
-    for attempt in range(5):  # Увеличил до 5 попыток
+    logger.info(f"Sending request for funny phrase for user {user_id}")
+    for attempt in range(5):
         try:
             response = requests.get(url, timeout=15)
             response.raise_for_status()
@@ -122,20 +126,20 @@ def generate_funny_phrase(user_id):
                 filter_url = f"https://www.purgomalum.com/service/containsprofanity?text={urllib.parse.quote(phrase)}"
                 filter_response = requests.get(filter_url, timeout=5)
                 if filter_response.text.lower() == "false":
-                    logger.info(f"Generated funny phrase for user {user_id}: {phrase}")
+                    logger.info(f"Generated funny phrase for user {user_id}: [filtered]")
                     user_phrases.append(phrase)
                     if len(user_phrases) > 20:
                         user_phrases.pop(0)
                     return phrase
-            logger.warning(f"Invalid or repeated funny phrase for user {user_id}: {phrase}")
+            logger.warning(f"Invalid or repeated funny phrase for user {user_id}: [filtered]")
         except Exception as e:
-            logger.error(f"Funny phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}", exc_info=True)
+            logger.error(f"Funny phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}")
     
-    # Запасная фраза без мата, если API не сработал
+    # Запасная фраза без мата
     backup_phrases = [
-        "Ёпт, мем жжёт, херня! 🔥",
-        "Блин, угар, пипец! 😝",
-        "Чё за дичь, но топ! 💣",
+        "Мем жжёт, бери топ! 🔥",
+        "Угар, гони ещё! 😝",
+        "Чё за дичь, пушка! 💣",
         "Кринж, но ржака! 💀"
     ]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
@@ -159,7 +163,7 @@ def load_memes():
             data = json.load(f)
             return data.get("memes", [])
     except Exception as e:
-        logger.error(f"Load memes error: {e}", exc_info=True)
+        logger.error(f"Load memes error: {e}")
         return []
 
 # Поиск ближайшего мема по названию
@@ -195,7 +199,7 @@ def download_meme_sound(sound_url, filename):
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
         file_size = os.path.getsize(filename)
-        logger.info(f"Downloaded meme sound {sound_url} to {filename}, size: {file_size} bytes")
+        logger.info(f"Downloaded meme sound to {filename}, size: {file_size} bytes")
         return True
     except Exception as e:
         logger.error(f"Failed to download meme sound {sound_url}: {e}")
@@ -205,21 +209,15 @@ def download_meme_sound(sound_url, filename):
 def generate_meme_audio(text, filename):
     sound_effect = random.choice(MEME_SOUNDS)
     effect_name, effect_url = sound_effect
-    effect_prompt = {
-        "scream": ", потом орёт как псих, АААА!",
-        "burp": ", потом громко рыгает, БУРП!",
-        "cry": ", потом плачет как ребёнок, УУУ!",
-        "laugh": ", потом ржёт как дебил, ХАХА!"
-    }[effect_name]
     
     prompt = (
-        f"Озвучь как дерзкий итальянский пацан с TikTok-вайбом, с абсурдной энергией, лёгким матом (ёпт, херня, пипец), и угаром: {text}{effect_prompt}"
+        f"Озвучь как дерзкий итальянский пацан с TikTok-вайбом, с абсурдной энергией, лёгким матом (ёпт, херня, пипец, блин), и угаром: {text}"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=echo&attitude=aggressive"
     
-    logger.info(f"Sending audio request to API: {url}")
-    for attempt in range(5):  # Увеличил до 5 попыток
+    logger.info(f"Sending audio request to API")
+    for attempt in range(5):
         try:
             response = requests.get(url, stream=True, timeout=30)
             response.raise_for_status()
@@ -249,9 +247,9 @@ def generate_meme_audio(text, filename):
             logger.info(f"Audio generated: {filename}, size: {os.path.getsize(filename)} bytes")
             return True
         except requests.HTTPError as e:
-            logger.error(f"Audio API HTTP error (attempt {attempt + 1}): {e}, response: {e.response.text}")
+            logger.error(f"Audio API HTTP error (attempt {attempt + 1}): {e}")
         except Exception as e:
-            logger.error(f"Audio API error (attempt {attempt + 1}): {e}", exc_info=True)
+            logger.error(f"Audio API error (attempt {attempt + 1}): {e}")
     
     logger.error("Failed to generate audio after 5 attempts")
     return False
@@ -266,7 +264,7 @@ def convert_to_ogg(mp3_path, ogg_path):
         logger.info(f"Converted to OGG: {ogg_path}, size: {file_size} bytes")
         return file_size > 1000
     except Exception as e:
-        logger.error(f"Convert error: {e}", exc_info=True)
+        logger.error(f"Convert error: {e}")
         return False
 
 # Команда /start
@@ -285,7 +283,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"{EMOJIS['help']} MEMEZVUKACH: гайд для тусы\n\n"
-        "Кидаю мемы и ору их с лёгким матом, херня!\n\n"
+        "Кидаю мемы и ору их с лёгким матом, пипец!\n\n"
         "Команды:\n"
         f"/start — врываемся в угар {EMOJIS['start']}\n"
         f"/help — этот гайд {EMOJIS['help']}\n"
@@ -320,7 +318,7 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_meme_response(update, context, response, meme)
         
     except Exception as e:
-        logger.error(f"Random meme error: {e}", exc_info=True)
+        logger.error(f"Random meme error: {e}")
         await update.message.reply_text(
             f"{EMOJIS['error']} Чёт сломалось, пипец! Го заново? 😣",
             reply_markup=MENU_KEYBOARD
@@ -375,7 +373,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_meme_response(update, context, response, meme)
         
     except Exception as e:
-        logger.error(f"Handle text error: {e}", exc_info=True)
+        logger.error(f"Handle text error: {e}")
         await update.message.reply_text(
             f"{EMOJIS['error']} Сломалось, херня! Попробуй ещё раз! 😣",
             reply_markup=MENU_KEYBOARD
@@ -387,12 +385,11 @@ async def prepare_meme_response(meme, user_id):
     funny_phrase = generate_funny_phrase(user_id)
     voice_text = f"{meme['name']}! {meme['tiktok_phrase']}, {funny_phrase}"
     
-    logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id} with emoji '{emoji}' and voice text: {voice_text}")
+    logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id} with emoji '{emoji}'")
     
     try:
         return {
             "type": "voice",
- NumPy docstring format
             "voice_text": voice_text,
             "caption": (
                 f"{emoji} {meme['name']}\n\n"
@@ -402,7 +399,7 @@ async def prepare_meme_response(meme, user_id):
             "reply_markup": MENU_KEYBOARD
         }
     except Exception as e:
-        logger.error(f"Prepare meme response error for user {user_id}: {e}", exc_info=True)
+        logger.error(f"Prepare meme response error for user {user_id}: {e}")
         return {
             "type": "text",
             "text": (
@@ -432,7 +429,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
                                 caption=response["caption"],
                                 reply_markup=response["reply_markup"]
                             )
-                        logger.info(f"Voice message sent successfully with caption: {response['caption']}")
+                        logger.info(f"Voice message sent successfully")
                         return
                 
                 logger.warning("Audio generation failed, sending text response")
@@ -449,7 +446,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 reply_markup=response["reply_markup"]
             )
     except Exception as e:
-        logger.error(f"Send meme response error: {e}", exc_info=True)
+        logger.error(f"Send meme response error: {e}")
         emoji = generate_emoji(meme["description"])
         await update.message.reply_text(
             f"{EMOJIS['error']} Сломалось, пипец!\n\n"
@@ -470,7 +467,7 @@ def main():
     try:
         app = Application.builder().token(TOKEN).build()
     except Exception as e:
-        logger.error(f"Failed to initialize bot: {e}", exc_info=True)
+        logger.error(f"Failed to initialize bot: {e}")
         raise
     
     app.add_handler(CommandHandler("start", start))
@@ -483,7 +480,7 @@ def main():
     try:
         app.run_polling(allowed_updates=Update.ALL_TYPES)
     except Exception as e:
-        logger.error(f"Polling error: {e}", exc_info=True)
+        logger.error(f"Polling error: {e}")
         raise
 
 if __name__ == "__main__":
