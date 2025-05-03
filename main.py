@@ -83,21 +83,19 @@ MENU_KEYBOARD = ReplyKeyboardMarkup(
 
 # Управление временными файлами
 @contextmanager
-def temp_audio_files():
+def temp_audio_file():
     mp3_fd, mp3_path = tempfile.mkstemp(suffix=".mp3", dir=AUDIO_DIR)
-    ogg_fd, ogg_path = tempfile.mkstemp(suffix=".ogg", dir=AUDIO_DIR)
     try:
-        yield mp3_path, ogg_path
+        yield mp3_path
     finally:
         time.sleep(2)
-        for fd, path in [(mp3_fd, mp3_path), (ogg_fd, ogg_path)]:
-            try:
-                os.close(fd)
-                if os.path.exists(path):
-                    os.remove(path)
-                    logger.info(f"Deleted temp file: {path}")
-            except Exception as e:
-                logger.warning(f"Failed to delete temp file {path}: {e}")
+        try:
+            os.close(mp3_fd)
+            if os.path.exists(mp3_path):
+                os.remove(mp3_path)
+                logger.info(f"Deleted temp file: {mp3_path}")
+        except Exception as e:
+            logger.warning(f"Failed to delete temp file {mp3_path}: {e}")
 
 # Генерация эмодзи по описанию
 def generate_emoji(description):
@@ -259,19 +257,6 @@ def generate_meme_audio(text, filename):
     logger.error("Failed to generate audio after 5 attempts")
     return False
 
-# Конвертация в OGG
-def convert_to_ogg(mp3_path, ogg_path):
-    try:
-        audio = AudioSegment.from_mp3(mp3_path)
-        audio = audio.set_frame_rate(44100).set_channels(1)
-        audio.export(ogg_path, format="ogg", codec="libopus", bitrate="64k")
-        file_size = os.path.getsize(ogg_path)
-        logger.info(f"Converted to OGG: {ogg_path}, size: {file_size} bytes")
-        return file_size > 1000
-    except Exception as e:
-        logger.error(f"Convert error: {e}")
-        return False
-
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -420,23 +405,20 @@ async def prepare_meme_response(meme, user_id):
 async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE, response, meme):
     try:
         if response["type"] == "voice":
-            with temp_audio_files() as (mp3_path, ogg_path):
+            with temp_audio_file() as mp3_path:
                 await context.bot.send_chat_action(
                     chat_id=update.effective_chat.id,
                     action="record_voice"
                 )
-                audio_success = False
                 if generate_meme_audio(response["voice_text"], mp3_path):
-                    if convert_to_ogg(mp3_path, ogg_path):
-                        audio_success = True
-                        with open(ogg_path, "rb") as audio_file:
-                            await update.message.reply_voice(
-                                voice=audio_file,
-                                caption=response["caption"],
-                                reply_markup=response["reply_markup"]
-                            )
-                        logger.info(f"Voice message sent successfully")
-                        return
+                    with open(mp3_path, "rb") as audio_file:
+                        await update.message.reply_voice(
+                            voice=audio_file,
+                            caption=response["caption"],
+                            reply_markup=response["reply_markup"]
+                        )
+                    logger.info(f"Voice message sent successfully")
+                    return
                 
                 logger.warning("Audio generation failed, sending text response")
                 emoji = generate_emoji(meme["description"])
