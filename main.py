@@ -53,9 +53,9 @@ EMOJIS = {
     "search": "🔥",
     "random": "🎰",
     "audio": "🎙️",
-    "loading": "⏳",
-    "error": "😅",
-    "success": "💥",
+    "loading": "👾",
+    "error": "🫠",
+    "success": "🍕",
     "meme": "🎉",
     "vibe": "😎"
 }
