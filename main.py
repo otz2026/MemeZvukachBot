@@ -49,31 +49,31 @@ user_phrase_history = {}
 # Эмодзи для мемов
 EMOJIS = {
     "welcome": "🚀",
-    "help": "ℹ️",
+    "help": "🔍",
     "search": "🔥",
-    "random": "🎰",
+    "random": "🎲",
     "audio": "🎙️",
-    "loading": "👾",
+    "loading": "⏳",
     "error": "🫠",
-    "success": "🍕",
-    "meme": "🎉",
+    "success": "💥",
+    "meme": "👾",
     "vibe": "😎"
 }
 EMOJI_MAP = {
     "акула": "🦈", "кот": "😼", "собака": "🐶", "динозавр": "🦖",
     "поезд": "🚂", "ракета": "🚀", "алкоголь": "🍺", "танц": "🕺",
     "крича": "🗣️", "бомба": "💣", "космос": "🪐", "пустыня": "🏜️",
-    "город": "🏙️", "лес": "🌴", "море": "🌊", "еда": "🍔",
+    "город": "🏙️", "лес": "🌴", "море": "🌊", "еда": "🍕",
     "фрукт": "🍍", "кофе": "☕", "магия": "✨", "взрыв": "💥",
-    "кринж": "😬", "угар": "😂", "жесть": "🦍", "абсурд": "🤪",
-    "похер": "😏", "пушка": "🎯"
+    "кринж": "😬", "угар": "👻", "жесть": "🦍", "абсурд": "🧨",
+    "похер": "😎", "пушка": "💣"
 }
 
 # Меню с эмодзи
 MENU_KEYBOARD = ReplyKeyboardMarkup(
     [
-        ["🔥 Найти мем", "🎰 Случайный"],
-        ["ℹ️ Помощь"]
+        ["🔥 Найти мем", "🎲 Случайный"],
+        ["🔍 Помощь"]
     ],
     resize_keyboard=True
 )
@@ -101,7 +101,7 @@ def generate_emoji(description):
         if word in description:
             logger.info(f"Selected emoji '{emoji}' for keyword '{word}' in description")
             return emoji
-    default_emoji = random.choice(["😂", "😬", "🤪", "🦍"])
+    default_emoji = random.choice(["👾", "🧨", "😎", "🦍"])
     logger.info(f"No matching keyword found, selected default emoji '{default_emoji}'")
     return default_emoji
 
@@ -137,9 +137,9 @@ def generate_funny_phrase(user_id):
     
     # Запасная фраза без мата
     backup_phrases = [
-        "Гори, бро, это пушка! 🎯",
-        "Фигня, но угар! 😂",
-        "Похер, мем топ! 💣",
+        "Гори, бро, это пушка! 💣",
+        "Фигня, но угар! 👻",
+        "Похер, мем топ! 😎",
         "Нахер, жги ещё! 🦍"
     ]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
@@ -257,27 +257,27 @@ def generate_meme_audio(text, filename):
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Привет! MemeZvukach — твой бот для мемов 😎\n\n"
-        "Ищешь угар? Вбей название мема или выбери случайный.\n"
-        "Готов жечь TikTok-вайб? Погнали!\n\n"
-        "🔥 Найти мем  🎰 Случайный  ℹ️ Помощь",
+        f"Yo, MemeZvukach в деле! 🚀\n\n"
+        "Хочешь мемов? Вбей название или лови рандом.\n"
+        "Готов к TikTok-вайбу? Жги!\n\n"
+        "🔥 Найти мем  🎲 Случайный  🔍 Помощь",
         reply_markup=MENU_KEYBOARD
     )
 
 # Команда /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Гайд по MemeZvukach ℹ️\n\n"
-        "Я бот, который находит мемы и озвучивает их с TikTok-вайбом 🎙️\n\n"
+        f"Как работает MemeZvukach 🔍\n\n"
+        "Я твой мемный бро, кидаю мемы с угарной озвучкой 🎙️\n\n"
         "Что могу:\n"
-        "- Найти мем по названию или описанию\n"
-        "- Кинуть случайный мем для угара\n"
-        "- Озвучить мемы с дерзким вайбом\n\n"
+        "- Найти мем по названию или вайбу\n"
+        "- Выдать случайный мем для ржаки\n"
+        "- Озвучить мемы с дерзким пацанским вайбом\n\n"
         "Команды:\n"
-        "/start — запустить движ\n"
+        "/start — врываемся\n"
         "/help — этот гайд\n"
-        "/random — случайный мем\n\n"
-        "Бери и жги, бро! 💥",
+        "/random — рандомный мем\n\n"
+        "Похер, давай жечь! 💥",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -285,14 +285,14 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         msg = await update.message.reply_text(
-            f"Ищу мемный шедевр... ⏳"
+            f"Копаю мемный топ... ⏳"
         )
         await asyncio.sleep(1.5)
         
         memes = load_memes()
         if not memes:
             await msg.edit_text(
-                f"Мемы кончились, фигня! 😅 Вбей что-нибудь.",
+                f"Мемы кончились, фигня! 🫠 Вбей что-нибудь.",
                 reply_markup=MENU_KEYBOARD
             )
             return
@@ -306,14 +306,14 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Random meme error: {e}")
         await update.message.reply_text(
-            f"Чёт мем не зашёл, давай ещё раз 😅",
+            f"Мем не зашёл, бери новый! 🫠",
             reply_markup=MENU_KEYBOARD
         )
 
 # Поиск мема
 async def search_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Вбей название или вайб мема 😎",
+        f"Вбей мем или его вайб 😎",
         reply_markup=MENU_KEYBOARD
     )
 
@@ -323,21 +323,21 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if text == "🔥 Найти мем":
         return await search_meme(update, context)
-    elif text == "🎰 Случайный":
+    elif text == "🎲 Случайный":
         return await random_meme(update, context)
-    elif text == "ℹ️ Помощь":
+    elif text == "🔍 Помощь":
         return await help_command(update, context)
     
     try:
         msg = await update.message.reply_text(
-            f"Копаю твой мем... ⏳"
+            f"Ищу твой мем... ⏳"
         )
         await asyncio.sleep(1.5)
         
         memes = load_memes()
         if not memes:
             await msg.edit_text(
-                f"Мемы не найдены, похер! 😅 Вбей другой.",
+                f"Мемы не найдены, похер! 🫠 Вбей другой.",
                 reply_markup=MENU_KEYBOARD
             )
             return
@@ -348,7 +348,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         if not meme:
             await msg.edit_text(
-                f"Мем не нашёл, фигня! 😅 Давай другой.",
+                f"Мем ускользнул, фигня! 🫠 Давай другой.",
                 reply_markup=MENU_KEYBOARD
             )
             return
@@ -361,7 +361,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Handle text error: {e}")
         await update.message.reply_text(
-            f"Что-то сломалось, нахер! 😅 Го заново.",
+            f"Что-то пошло нахер! 🫠 Го заново.",
             reply_markup=MENU_KEYBOARD
         )
 
@@ -389,7 +389,7 @@ async def prepare_meme_response(meme, user_id):
         return {
             "type": "text",
             "text": (
-                f"Мем сломался, фигня! 😅\n\n"
+                f"Мем сломался, фигня! 🫠\n\n"
                 f"{emoji} {meme['name']}\n{meme['description']}\n\n"
                 f"Го заново?"
             ),
@@ -420,7 +420,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 await update.message.reply_text(
                     f"{emoji} {meme['name']}\n\n"
                     f"{meme['description']}\n\n"
-                    f"Аудио не зашло, похер! 😅 Мем топ!",
+                    f"Аудио не зашло, похер! 🫠 Мем пушка!",
                     reply_markup=response["reply_markup"]
                 )
         else:
@@ -432,7 +432,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
         logger.error(f"Send meme response error: {e}")
         emoji = generate_emoji(meme["description"])
         await update.message.reply_text(
-            f"Мем потерялся, фигня! 😅\n\n"
+            f"Мем потерялся, фигня! 🫠\n\n"
             f"{emoji} {meme['name']}\n{meme['description']}\n\n"
             f"Го дальше, бро?",
             reply_markup=MENU_KEYBOARD
