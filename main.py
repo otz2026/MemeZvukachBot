@@ -9,6 +9,7 @@ import difflib
 import logging
 import tempfile
 import asyncio
+import nest_asyncio
 from contextlib import contextmanager
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -18,6 +19,8 @@ import g4f
 from g4f.client import AsyncClient
 from bs4 import BeautifulSoup
 
+nest_asyncio.apply()
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger("MEMEZVUKACH")
 MEMES_JSON = "memes.json"
@@ -25,13 +28,8 @@ AUDIO_DIR = "meme_audios"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 MEME_SOUNDS = [
-    ("scream", "https://myinstants.com/media/sounds/scream.mp3", "https://soundbuttons.net/sounds/123/scream.mp3"),
-    ("burp", "https://myinstants.com/media/sounds/burp.mp3", "https://soundbuttons.net/sounds/456/burp.mp3"),
-    ("cry", "https://myinstants.com/media/sounds/cry.mp3", "https://soundbuttons.net/sounds/789/cry.mp3"),
-    ("laugh", "https://myinstants.com/media/sounds/laugh.mp3", "https://soundbuttons.net/sounds/1011/laugh.mp3"),
-    ("drake", "https://myinstants.com/media/sounds/drake.mp3", "https://soundbuttons.net/sounds/1213/drake.mp3"),
-    ("airhorn", "https://myinstants.com/media/sounds/airhorn.mp3", "https://soundbuttons.net/sounds/1415/airhorn.mp3"),
     ("vine_boom", "https://myinstants.com/media/sounds/vine_boom.mp3", "https://soundbuttons.net/sounds/1617/vine_boom.mp3"),
+    ("airhorn", "https://myinstants.com/media/sounds/airhorn.mp3", "https://soundbuttons.net/sounds/1415/airhorn.mp3"),
     ("anime_wow", "https://myinstants.com/media/sounds/anime_wow.mp3", "https://soundbuttons.net/sounds/1819/anime_wow.mp3")
 ]
 
@@ -102,8 +100,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.You,
+            model="searchgpt",
+            provider=g4f.Provider.PollinationsAI,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -122,8 +120,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.You,
+            model="searchgpt",
+            provider=g4f.Provider.PollinationsAI,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -209,7 +207,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
         f"Добавь фразу: '{funny_phrase}'"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
-    url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=echo&attitude=excited"
+    url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
     logger.info(f"Sending audio request to API for text: {text}")
     for attempt in range(5):
@@ -392,7 +390,7 @@ def main():
     TOKEN = os.getenv("TELEGRAM_TOKEN")
     if not TOKEN:
         logger.error("TELEGRAM_TOKEN not set in environment variables")
-        raise ValueError("TELEGRAM_TOKEN is required")
+        raise ValueValueError("TELEGRAM_TOKEN is required")
     
     try:
         requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
