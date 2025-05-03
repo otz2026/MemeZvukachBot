@@ -31,14 +31,14 @@ AUDIO_DIR = "meme_audios"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 MEME_SOUNDS = [
-    ("scream", "https://freesound.org/data/previews/269/269764_4299048-lq.mp3", "https://cdn.pixabay.com/audio/2022/08/10/audio_4f4b8e4f5d.mp3"),
-    ("burp", "https://freesound.org/data/previews/136/136181_2396973-lq.mp3", "https://cdn.pixabay.com/audio/2023/03/20/audio_7a6b9f7e8d.mp3"),
-    ("cry", "https://freesound.org/data/previews/193/193353_2431407-lq.mp3", "https://cdn.pixabay.com/audio/2022/03/10/audio_4e8f7b2a3c.mp3"),
-    ("laugh", "https://freesound.org/data/previews/203/203714_2619675-lq.mp3", "https://cdn.pixabay.com/audio/2022/08/10/audio_3f2a9c6e7b.mp3"),
-    ("drake", "https://freesound.org/data/previews/364/364918_5910492-lq.mp3", "https://cdn.pixabay.com/audio/2023/03/20/audio_9c8f3e2b1a.mp3"),
-    ("airhorn", "https://freesound.org/data/previews/154/154955_2701569-lq.mp3", "https://cdn.pixabay.com/audio/2022/08/10/audio_2d9f8a4c6e.mp3"),
-    ("vine_boom", "https://freesound.org/data/previews/622/622181_11866629-lq.mp3", "https://cdn.pixabay.com/audio/2023/03/20/audio_5b7e9d3c2f.mp3"),
-    ("anime_wow", "https://freesound.org/data/previews/156/156859_2538033-lq.mp3", "https://cdn.pixabay.com/audio/2022/08/10/audio_1c3f7a9b4d.mp3")
+    ("scream", "https://voicy.network/content/3b7f8e6c-7c3e-4f5a-8e3a-9c2d1e4f5b6c.mp3", "https://myinstants.com/media/sounds/scream.mp3"),
+    ("burp", "https://voicy.network/content/8d9e2a4b-6f1c-4e2b-9a5d-3c7e8f9b0a1d.mp3", "https://myinstants.com/media/sounds/burp.mp3"),
+    ("cry", "https://voicy.network/content/4c8a1b3d-5e2d-4f6c-8b9e-2d3c7f4a0e5b.mp3", "https://myinstants.com/media/sounds/cry.mp3"),
+    ("laugh", "https://voicy.network/content/7e6b2c9a-4f3d-4e7a-9c8b-1a2d3e4f5c6d.mp3", "https://myinstants.com/media/sounds/laugh.mp3"),
+    ("drake", "https://voicy.network/content/9f7c3d8b-6e4a-4f8b-9d7c-2b3e4f5a0d6e.mp3", "https://myinstants.com/media/sounds/drake.mp3"),
+    ("airhorn", "https://voicy.network/content/2a6d4e9c-7f5b-4e8a-9c6d-3e4f5a0b1c7d.mp3", "https://myinstants.com/media/sounds/airhorn.mp3"),
+    ("vine_boom", "https://voicy.network/content/5b7e4f0a-8c6a-4f9b-9e8c-4a5b6c7d0e2f.mp3", "https://myinstants.com/media/sounds/vine_boom.mp3"),
+    ("anime_wow", "https://voicy.network/content/6c8d5f1b-9a7b-4e0c-8f9d-5b6c7d0e2a3f.mp3", "https://myinstants.com/media/sounds/anime_wow.mp3")
 ]
 
 user_phrase_history = {}
@@ -108,8 +108,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="grok",
-            provider=g4f.Provider.Grok,
+            model="gpt-4",
+            provider=g4f.Provider.Bing,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -128,8 +128,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="grok",
-            provider=g4f.Provider.Grok,
+            model="gpt-4",
+            provider=g4f.Provider.Bing,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -194,7 +194,7 @@ def find_meme_by_description(query, memes):
 def download_meme_sound(sound_url, fallback_url, filename):
     for url in [sound_url, fallback_url]:
         try:
-            response = requests.get(url, stream=True, timeout=20)
+            response = requests.get(url, stream=True, timeout=30)
             response.raise_for_status()
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
