@@ -11,13 +11,7 @@ import tempfile
 import asyncio
 from contextlib import contextmanager
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    filters,
-    ContextTypes
-)
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from pydub import AudioSegment
 from background import keep_alive
 import g4f
@@ -108,8 +102,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.Bing,
+            model="searchgpt",
+            provider=g4f.Provider.PollinationsAI,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -128,8 +122,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.Bing,
+            model="searchgpt",
+            provider=g4f.Provider.PollinationsAI,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -161,7 +155,6 @@ def load_memes():
     try:
         if not os.path.exists(MEMES_JSON):
             logger.error(f"Memes file {MEMES_JSON} not found")
-            return []
         with open(MEMES_JSON, "r", encoding="utf-8") as f:
             data = json.load(f)
             return data.get("memes", [])
@@ -401,7 +394,7 @@ def main():
         raise ValueError("TELEGRAM_TOKEN is required")
     
     try:
-        requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook", timeout=10)
+        requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
         logger.info("Webhook deleted successfully")
     except Exception as e:
         logger.error(f"Failed to delete webhook: {e}")
