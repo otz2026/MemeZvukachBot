@@ -25,14 +25,14 @@ AUDIO_DIR = "meme_audios"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 MEME_SOUNDS = [
-    ("scream", "https://voicy.network/content/3b7f8e6c-7c3e-4f5a-8e3a-9c2d1e4f5b6c.mp3", "https://myinstants.com/media/sounds/scream.mp3"),
-    ("burp", "https://voicy.network/content/8d9e2a4b-6f1c-4e2b-9a5d-3c7e8f9b0a1d.mp3", "https://myinstants.com/media/sounds/burp.mp3"),
-    ("cry", "https://voicy.network/content/4c8a1b3d-5e2d-4f6c-8b9e-2d3c7f4a0e5b.mp3", "https://myinstants.com/media/sounds/cry.mp3"),
-    ("laugh", "https://voicy.network/content/7e6b2c9a-4f3d-4e7a-9c8b-1a2d3e4f5c6d.mp3", "https://myinstants.com/media/sounds/laugh.mp3"),
-    ("drake", "https://voicy.network/content/9f7c3d8b-6e4a-4f8b-9d7c-2b3e4f5a0d6e.mp3", "https://myinstants.com/media/sounds/drake.mp3"),
-    ("airhorn", "https://voicy.network/content/2a6d4e9c-7f5b-4e8a-9c6d-3e4f5a0b1c7d.mp3", "https://myinstants.com/media/sounds/airhorn.mp3"),
-    ("vine_boom", "https://voicy.network/content/5b7e4f0a-8c6a-4f9b-9e8c-4a5b6c7d0e2f.mp3", "https://myinstants.com/media/sounds/vine_boom.mp3"),
-    ("anime_wow", "https://voicy.network/content/6c8d5f1b-9a7b-4e0c-8f9d-5b6c7d0e2a3f.mp3", "https://myinstants.com/media/sounds/anime_wow.mp3")
+    ("scream", "https://myinstants.com/media/sounds/scream.mp3", "https://soundbuttons.net/sounds/123/scream.mp3"),
+    ("burp", "https://myinstants.com/media/sounds/burp.mp3", "https://soundbuttons.net/sounds/456/burp.mp3"),
+    ("cry", "https://myinstants.com/media/sounds/cry.mp3", "https://soundbuttons.net/sounds/789/cry.mp3"),
+    ("laugh", "https://myinstants.com/media/sounds/laugh.mp3", "https://soundbuttons.net/sounds/1011/laugh.mp3"),
+    ("drake", "https://myinstants.com/media/sounds/drake.mp3", "https://soundbuttons.net/sounds/1213/drake.mp3"),
+    ("airhorn", "https://myinstants.com/media/sounds/airhorn.mp3", "https://soundbuttons.net/sounds/1415/airhorn.mp3"),
+    ("vine_boom", "https://myinstants.com/media/sounds/vine_boom.mp3", "https://soundbuttons.net/sounds/1617/vine_boom.mp3"),
+    ("anime_wow", "https://myinstants.com/media/sounds/anime_wow.mp3", "https://soundbuttons.net/sounds/1819/anime_wow.mp3")
 ]
 
 user_phrase_history = {}
@@ -63,7 +63,7 @@ def generate_funny_phrase(user_id):
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй ультра-смешную мемную фразу в стиле TikTok, до 50 символов, с итальянским вайбом."
+    prompt = "Сгенерируй мемную фразу в стиле TikTok, до 50 символов, про итальянских мемных животных."
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
@@ -86,7 +86,7 @@ def generate_funny_phrase(user_id):
         except Exception as e:
             logger.error(f"Phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}")
     
-    backup_phrases = ["Эщкере, синьор! 🌟", "Туса на миллион! 🎉", "Взлетаем, пацаны! 🦁", "Это пушка, бро! 🦄"]
+    backup_phrases = ["Кроко-босс! 🐊", "Тралала-взрыв! 🎉", "Барабум-вайб! 🦁", "Трули-туса! 🦄"]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
     if not available_phrases:
         user_phrases.clear()
@@ -102,8 +102,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="searchgpt",
-            provider=g4f.Provider.PollinationsAI,
+            model="gpt-4",
+            provider=g4f.Provider.You,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -122,8 +122,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="searchgpt",
-            provider=g4f.Provider.PollinationsAI,
+            model="gpt-4",
+            provider=g4f.Provider.You,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -155,6 +155,7 @@ def load_memes():
     try:
         if not os.path.exists(MEMES_JSON):
             logger.error(f"Memes file {MEMES_JSON} not found")
+            return []
         with open(MEMES_JSON, "r", encoding="utf-8") as f:
             data = json.load(f)
             return data.get("memes", [])
