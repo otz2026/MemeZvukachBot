@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: memezvukach-bot
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: |
+      apt-get update && apt-get install -y ffmpeg
+      pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: TELEGRAM_TOKEN
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.9
