@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import random
 import os
@@ -26,9 +27,9 @@ AUDIO_DIR = "meme_audios"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 MEME_SOUNDS = [
-    ("vine_boom", "https://myinstants.com/media/sounds/vine_boom.mp3", "https://soundbuttons.net/sounds/1617/vine_boom.mp3"),
-    ("airhorn", "https://myinstants.com/media/sounds/airhorn.mp3", "https://soundbuttons.net/sounds/1415/airhorn.mp3"),
-    ("anime_wow", "https://myinstants.com/media/sounds/anime_wow.mp3", "https://soundbuttons.net/sounds/1819/anime_wow.mp3")
+    ("vine_boom", "https://myinstants.com/media/sounds/vine-boom.mp3", "https://soundboardguy.com/sounds/vine-boom.mp3"),
+    ("airhorn", "https://myinstants.com/media/sounds/airhorn.mp3", "https://soundboardguy.com/sounds/airhorn.mp3"),
+    ("anime_wow", "https://myinstants.com/media/sounds/anime-wow.mp3", "https://soundboardguy.com/sounds/anime-wow.mp3")
 ]
 
 user_phrase_history = {}
@@ -38,6 +39,7 @@ MENU_KEYBOARD = ReplyKeyboardMarkup([["🔥 Найти Шедевр", "🎲 Сл
 async_client = AsyncClient()
 PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема или ссылку на документацию с фото, используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
 EMOJI_PRESET = """Верни один яркий мемный эмодзи для мема {name_english} ({name}). Только эмодзи, без текста."""
+PHRASE_PRESET = """Сгенерируй мемную фразу в стиле TikTok, до 50 символов, про итальянских мемных животных. Фраза должна быть смешной и энергичной. Только фраза, без пояснений."""
 
 # Кэш мемов
 _memes_cache = None
@@ -57,35 +59,31 @@ def temp_audio_file():
         except Exception as e:
             logger.warning(f"Failed to delete temp file {mp3_path}: {e}")
 
-def generate_funny_phrase(user_id):
+async def generate_funny_phrase(user_id):
     if user_id not in user_phrase_history:
         user_phrase_history[user_id] = []
     user_phrases = user_phrase_history[user_id]
     
-    prompt = "Сгенерируй мемную фразу в стиле TikTok, до 50 символов, про итальянских мемных животных."
-    encoded_prompt = urllib.parse.quote(prompt, safe='')
-    url = f"https://text.pollinations.ai/{encoded_prompt}"
+    try:
+        response = await async_client.chat.completions.create(
+            model="grok-3",
+            provider=g4f.Provider.Grok,
+            messages=[{"role": "system", "content": PHRASE_PRESET}, {"role": "user", "content": "Сгенерируй фразу"}],
+            web_search=False,
+            stream=False
+        )
+        phrase = response.choices[0].message.content.strip()
+        if phrase and len(phrase) <= 50 and phrase not in user_phrases:
+            logger.info(f"Generated phrase for user {user_id}: [filtered]")
+            user_phrases.append(phrase)
+            if len(user_phrases) > 20:
+                user_phrases.pop(0)
+            return phrase
+        logger.warning(f"Invalid or repeated phrase for user {user_id}: [filtered]")
+    except Exception as e:
+        logger.error(f"Phrase generation error for user {user_id}: {e}")
     
-    logger.info(f"Sending request for phrase for user {user_id}")
-    for attempt in range(3):
-        try:
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            phrase = response.text.strip()
-            if phrase and len(phrase) <= 50 and phrase not in user_phrases:
-                filter_url = f"https://www.purgomalum.com/service/containsprofanity?text={urllib.parse.quote(phrase)}"
-                filter_response = requests.get(filter_url, timeout=5)
-                if filter_response.text.lower() == "false":
-                    logger.info(f"Generated phrase for user {user_id}: [filtered]")
-                    user_phrases.append(phrase)
-                    if len(user_phrases) > 20:
-                        user_phrases.pop(0)
-                    return phrase
-            logger.warning(f"Invalid or repeated phrase for user {user_id}: [filtered]")
-        except Exception as e:
-            logger.error(f"Phrase generation error (attempt {attempt + 1}) for user {user_id}: {e}")
-    
-    backup_phrases = ["Кроко-босс! 🐊", "Тралала-взрыв! 🎉", "Барабум-вайб! 🦁", "Трули-туса! 🦄"]
+    backup_phrases = ["Гиппо-тусня! 🦛", "Краб-шокер! 🦀", "Трали-бум! 🎤", "Капучино-вайб! ☕"]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
     if not available_phrases:
         user_phrases.clear()
@@ -101,8 +99,8 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian})"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.Bing,
+            model="grok-3",
+            provider=g4f.Provider.Grok,
             messages=[{"role": "system", "content": EMOJI_PRESET}, {"role": "user", "content": query}],
             web_search=False,
             stream=False
@@ -121,8 +119,8 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
     try:
         query = f"{meme_name_english} ({meme_name_russian}) итальянский мем"
         response = await async_client.chat.completions.create(
-            model="gpt-4",
-            provider=g4f.Provider.Bing,
+            model="grok-3",
+            provider=g4f.Provider.Grok,
             messages=[{"role": "system", "content": PHOTO_PRESET}, {"role": "user", "content": query}],
             web_search=True,
             stream=False
@@ -138,12 +136,15 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
         return "Фото не найдено 😕"
 
 async def gradual_reply(context, chat_id, message_id, text):
-    words = text.split()
-    current_text = ""
-    for word in words:
-        current_text += word + " "
-        await context.bot.edit_message_text(text=current_text.strip(), chat_id=chat_id, message_id=message_id)
-        await asyncio.sleep(0.05)
+    try:
+        words = text.split()
+        current_text = ""
+        for word in words:
+            current_text += word + " "
+            await context.bot.edit_message_text(text=current_text.strip(), chat_id=chat_id, message_id=message_id)
+            await asyncio.sleep(0.05)
+    except Exception as e:
+        logger.error(f"Gradual reply error: {e}")
 
 def load_memes():
     global _memes_cache
@@ -186,7 +187,7 @@ def find_meme_by_description(query, memes):
 def download_meme_sound(sound_url, fallback_url, filename):
     for url in [sound_url, fallback_url]:
         try:
-            response = requests.get(url, stream=True, timeout=15)
+            response = requests.get(url, stream=True, timeout=20)
             response.raise_for_status()
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
@@ -210,9 +211,9 @@ async def generate_meme_audio(text, filename, funny_phrase):
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
     logger.info(f"Sending audio request to API for text: {text}")
-    for attempt in range(3):
+    for attempt in range(2):
         try:
-            response = requests.get(url, stream=True, timeout=15)
+            response = requests.get(url, stream=True, timeout=20)
             response.raise_for_status()
             
             with open(filename, "wb") as f:
@@ -245,7 +246,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
         except Exception as e:
             logger.error(f"Audio API error (attempt {attempt + 1}): {e}")
     
-    logger.error("Failed to generate audio after 3 attempts")
+    logger.error("Failed to generate audio after 2 attempts")
     return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -323,7 +324,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Ошибка поиска! 😕🚀 Пробуй снова.", reply_markup=MENU_KEYBOARD)
 
 async def prepare_meme_response(meme, user_id):
-    funny_phrase = generate_funny_phrase(user_id)
+    funny_phrase = await generate_funny_phrase(user_id)
     voice_text = f"{meme['name_english']}"
     
     logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id}")
@@ -366,13 +367,13 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
         if response["type"] == "voice":
             with open(response["voice_file"], "rb") as audio_file:
                 await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="record_voice")
-                msg = await update.message.reply_voice(voice=audio_file, caption="⏳", reply_markup=response["reply_markup"])
-                await gradual_reply(context, update.effective_chat.id, msg.message_id, response["text"])
+                await update.message.reply_voice(voice=audio_file, caption=response["text"], reply_markup=response["reply_markup"])
             logger.info(f"Voice message sent successfully")
             os.remove(response["voice_file"])
         else:
             msg = await update.message.reply_text("⏳", reply_markup=response["reply_markup"])
             await gradual_reply(context, update.effective_chat.id, msg.message_id, response["text"])
+            await msg.delete()
         
         await update.message.reply_text(response["link"], reply_markup=response["reply_markup"])
     except Exception as e:
@@ -383,6 +384,7 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
             f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n{meme['description']}\n\n"
             f"Мем без вайба! 😕 🌟🎉"
         )
+        await msg.delete()
         await update.message.reply_text("Фото не найдено 😕", reply_markup=response["reply_markup"])
 
 def main():
