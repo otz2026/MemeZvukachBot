@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import json
 import random
 import os
@@ -17,7 +16,6 @@ from pydub import AudioSegment
 from background import keep_alive
 import g4f
 from g4f.client import AsyncClient
-from bs4 import BeautifulSoup
 
 nest_asyncio.apply()
 
@@ -38,8 +36,11 @@ EMOJIS = {"welcome": "🚀", "help": "🔍", "search": "🔥", "random": "🎲",
 MENU_KEYBOARD = ReplyKeyboardMarkup([["🔥 Найти Шедевр", "🎲 Случайный Вайб"], ["🔍 Гид по Мемам"]], resize_keyboard=True)
 
 async_client = AsyncClient()
-PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема, используя английское и русское название. Верни только одну ссылку на фото. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст. ОТПРАВЬ ТОЛЬКО НАЗВАНИЕ МЕМА И ССЫЛКУ НА ФОТКУ(ИЛИ САЙТ С ФОТОКЙ НУЖНОГО МЕМА)!"""
+PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема или ссылку на документацию с фото, используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
 EMOJI_PRESET = """Верни один яркий мемный эмодзи для мема {name_english} ({name}). Только эмодзи, без текста."""
+
+# Кэш мемов
+_memes_cache = None
 
 @contextmanager
 def temp_audio_file():
@@ -47,7 +48,7 @@ def temp_audio_file():
     try:
         yield mp3_path
     finally:
-        time.sleep(2)
+        time.sleep(1)
         try:
             os.close(mp3_fd)
             if os.path.exists(mp3_path):
@@ -66,9 +67,9 @@ def generate_funny_phrase(user_id):
     url = f"https://text.pollinations.ai/{encoded_prompt}"
     
     logger.info(f"Sending request for phrase for user {user_id}")
-    for attempt in range(5):
+    for attempt in range(3):
         try:
-            response = requests.get(url, timeout=15)
+            response = requests.get(url, timeout=10)
             response.raise_for_status()
             phrase = response.text.strip()
             if phrase and len(phrase) <= 50 and phrase not in user_phrases:
@@ -130,19 +131,6 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
         logger.info(f"Photo URL from g4f for {query}: {photo_url}")
         if photo_url != "Фото не найдено 😕" and photo_url.startswith("http"):
             return photo_url
-        
-        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}"
-        headers = {"User-Agent": "Mozilla/5.0"}
-        google_response = requests.get(google_url, headers=headers, timeout=10)
-        if google_response.status_code == 200:
-            soup = BeautifulSoup(google_response.text, "html.parser")
-            img_tags = soup.find_all("img")
-            for img in img_tags[1:]:
-                src = img.get("src")
-                if src and src.startswith("http"):
-                    logger.info(f"Google Images URL for {query}: {src}")
-                    return src
-        
         logger.warning(f"No photo found for {query}")
         return "Фото не найдено 😕"
     except Exception as e:
@@ -155,16 +143,20 @@ async def gradual_reply(context, chat_id, message_id, text):
     for word in words:
         current_text += word + " "
         await context.bot.edit_message_text(text=current_text.strip(), chat_id=chat_id, message_id=message_id)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.05)
 
 def load_memes():
+    global _memes_cache
+    if _memes_cache is not None:
+        return _memes_cache
     try:
         if not os.path.exists(MEMES_JSON):
             logger.error(f"Memes file {MEMES_JSON} not found")
             return []
         with open(MEMES_JSON, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return data.get("memes", [])
+            _memes_cache = data.get("memes", [])
+            return _memes_cache
     except Exception as e:
         logger.error(f"Load memes error: {e}")
         return []
@@ -194,7 +186,7 @@ def find_meme_by_description(query, memes):
 def download_meme_sound(sound_url, fallback_url, filename):
     for url in [sound_url, fallback_url]:
         try:
-            response = requests.get(url, stream=True, timeout=30)
+            response = requests.get(url, stream=True, timeout=15)
             response.raise_for_status()
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
@@ -218,9 +210,9 @@ async def generate_meme_audio(text, filename, funny_phrase):
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
     logger.info(f"Sending audio request to API for text: {text}")
-    for attempt in range(5):
+    for attempt in range(3):
         try:
-            response = requests.get(url, stream=True, timeout=30)
+            response = requests.get(url, stream=True, timeout=15)
             response.raise_for_status()
             
             with open(filename, "wb") as f:
@@ -253,7 +245,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
         except Exception as e:
             logger.error(f"Audio API error (attempt {attempt + 1}): {e}")
     
-    logger.error("Failed to generate audio after 5 attempts")
+    logger.error("Failed to generate audio after 3 attempts")
     return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -274,7 +266,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         msg = await update.message.reply_text(f"Выбираю шедевр... ⏳🦄")
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1)
         
         memes = load_memes()
         if not memes:
@@ -306,7 +298,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         msg = await update.message.reply_text(f"Ищу твой мем... ⏳🎸")
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1)
         
         memes = load_memes()
         if not memes:
@@ -347,19 +339,13 @@ async def prepare_meme_response(meme, user_id):
             "type": "voice" if audio_success else "text",
             "voice_text": voice_text,
             "voice_file": f"{AUDIO_DIR}/temp_{user_id}.mp3" if audio_success else None,
-            "caption": (
+            "text": (
                 f"{emoji} Озвучка... 🎸\n"
                 f"{meme['name_english']}, {meme['name']}\n\n"
                 f"{meme['description']}\n\n"
-                f"{photo_url}\n\n"
-                f"{funny_phrase} Ещё мем? 🌟🎉"
+                f"{funny_phrase} 🌟🎉"
             ),
-            "text": (
-                f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
-                f"{meme['description']}\n\n"
-                f"{photo_url}\n\n"
-                f"{funny_phrase} Аудио не вайбнуло, но мем топ! 🎉🦁"
-            ),
+            "link": photo_url,
             "reply_markup": MENU_KEYBOARD
         }
     except Exception as e:
@@ -369,9 +355,9 @@ async def prepare_meme_response(meme, user_id):
             "text": (
                 f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
                 f"{meme['description']}\n\n"
-                f"{photo_url}\n\n"
-                f"{funny_phrase} Мем без озвучки! 😕 Ещё вайб? 🌟"
+                f"{funny_phrase} 🌟🎉"
             ),
+            "link": "Фото не найдено 😕",
             "reply_markup": MENU_KEYBOARD
         }
 
@@ -380,20 +366,24 @@ async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE,
         if response["type"] == "voice":
             with open(response["voice_file"], "rb") as audio_file:
                 await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="record_voice")
-                await update.message.reply_voice(voice=audio_file, caption=response["caption"], reply_markup=response["reply_markup"])
+                msg = await update.message.reply_voice(voice=audio_file, caption="⏳", reply_markup=response["reply_markup"])
+                await gradual_reply(context, update.effective_chat.id, msg.message_id, response["text"])
             logger.info(f"Voice message sent successfully")
             os.remove(response["voice_file"])
         else:
-            msg = await update.message.reply_text("⏳")
+            msg = await update.message.reply_text("⏳", reply_markup=response["reply_markup"])
             await gradual_reply(context, update.effective_chat.id, msg.message_id, response["text"])
+        
+        await update.message.reply_text(response["link"], reply_markup=response["reply_markup"])
     except Exception as e:
         logger.error(f"Send meme response error: {e}")
         emoji = random.choice(["🦈", "🦄", "🦁", "🎸", "🌟"])
-        msg = await update.message.reply_text("⏳")
+        msg = await update.message.reply_text("⏳", reply_markup=response["reply_markup"])
         await gradual_reply(context, update.effective_chat.id, msg.message_id,
             f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n{meme['description']}\n\n"
-            f"Фото не найдено 😕\n\nМем без вайба! 😕 Го дальше? 🌟🎉"
+            f"Мем без вайба! 😕 🌟🎉"
         )
+        await update.message.reply_text("Фото не найдено 😕", reply_markup=response["reply_markup"])
 
 def main():
     TOKEN = os.getenv("TELEGRAM_TOKEN")
