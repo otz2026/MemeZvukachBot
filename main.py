@@ -251,7 +251,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
-    logger.info(f"Sending audio request to API for text: {prompt}")
+    logger.info(f"Sending audio request to API")
     async with semaphore:
         for attempt in range(2):
             try:
@@ -321,7 +321,7 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         
         meme = random.choice(memes)
-        response = await prepare_meme_response(meme, user_id)
+        response = await prepare_meme_response(meme, user_id, update)
         await msg.delete()
         await send_meme_response(update, context, response, meme)
         
@@ -363,7 +363,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await msg.edit_text(f"Мем не найден! 😕🦄 Попробуй другое.", reply_markup=MENU_KEYBOARD)
             return
         
-        response = await prepare_meme_response(meme, user_id)
+        response = await prepare_meme_response(meme, user_id, update)
         await msg.delete()
         await send_meme_response(update, context, response, meme)
         
@@ -372,7 +372,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.delete()
         await update.message.reply_text(f"Ошибка поиска! 😕🚀 Пробуй снова.", reply_markup=MENU_KEYBOARD)
 
-async def prepare_meme_response(meme, user_id):
+async def prepare_meme_response(meme, user_id, update):
     funny_phrase = await generate_funny_phrase(meme)
     voice_text = f"{meme['name_english']}"
     
@@ -445,11 +445,23 @@ async def main():
         raise ValueError("TELEGRAM_TOKEN is required")
     
     try:
-        requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
-        requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url=", timeout=10)
+        # Проверка состояния бота
+        response = requests.get(f"https://api.telegram.org/bot{TOKEN}/getMe", timeout=10)
+        if response.status_code == 200:
+            logger.info("Bot is accessible: %s", response.json())
+        else:
+            logger.error("Failed to access bot: %s", response.text)
+            raise ValueError("Bot initialization failed")
+        
+        # Очистка вебхуков
+        for _ in range(3):  # Повтор для надежности
+            requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
+            requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url=", timeout=10)
+            await asyncio.sleep(1)
         logger.info("Webhook deleted and reset successfully")
     except Exception as e:
-        logger.error(f"Failed to delete/reset webhook: {e}")
+        logger.error(f"Failed to initialize Telegram API: {e}")
+        raise
     
     logger.info("MEMEZVUKACH стартует...")
     
@@ -466,7 +478,7 @@ async def main():
     
     logger.info("Бот готов зажигать TikTok-вайб!")
     keep_alive()
-    await asyncio.sleep(5)  # Задержка для очистки
+    await asyncio.sleep(10)  # Увеличенная задержка для очистки
     try:
         await app.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
     except Exception as e:
