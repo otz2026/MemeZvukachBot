@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import json
 import random
 import os
@@ -18,6 +18,8 @@ from background import keep_alive
 import g4f
 from g4f.client import AsyncClient
 from bs4 import BeautifulSoup
+from PIL import Image
+from io import BytesIO
 
 nest_asyncio.apply()
 
@@ -38,7 +40,7 @@ EMOJIS = {"welcome": "🚀", "help": "🔍", "search": "🔥", "random": "🎲",
 MENU_KEYBOARD = ReplyKeyboardMarkup([["🔥 Найти Шедевр", "🎲 Случайный Вайб"], ["🔍 Гид по Мемам"]], resize_keyboard=True)
 
 async_client = AsyncClient()
-PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема или ссылку на документацию с фото, используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
+PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема или ссылку на документацию с фото в высоком разрешении (не менее 800x600 пикселей), используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
 EMOJI_PRESET = """Верни один яркий мемный эмодзи для мема {name_english} ({name}). Только эмодзи, без текста."""
 PHRASE_PRESET = """Сгенерируй мемную фразу в стиле TikTok, до 50 символов, про итальянских мемных животных. Фраза должна быть смешной и энергичной. Только фраза, без пояснений."""
 
@@ -129,12 +131,13 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
         photo_url = response.choices[0].message.content.strip()
         logger.info(f"Photo URL from g4f for {query}: {photo_url}")
         if photo_url != "Фото не найдено 😕" and photo_url.startswith("http"):
-            return photo_url
+            if await check_image_size(photo_url):
+                return photo_url
     except Exception as e:
         logger.error(f"Photo search error for {query}: {e}")
     
     try:
-        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}"
+        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}&tbs=isz:lt,islt:svga"
         headers = {"User-Agent": "Mozilla/5.0"}
         google_response = requests.get(google_url, headers=headers, timeout=30)
         if google_response.status_code == 200:
@@ -143,13 +146,29 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
             for img in img_tags[1:]:
                 src = img.get("src")
                 if src and src.startswith("http"):
-                    logger.info(f"Google Images URL for {query}: {src}")
-                    return src
+                    if await check_image_size(src):
+                        logger.info(f"Google Images URL for {query}: {src}")
+                        return src
     except Exception as e:
         logger.error(f"Google Images search error for {query}: {e}")
     
     logger.warning(f"No photo found for {query}")
     return "Фото не найдено 😕"
+
+async def check_image_size(url):
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        img = Image.open(BytesIO(response.content))
+        width, height = img.size
+        if width >= 800 and height >= 600:
+            logger.info(f"Image {url} meets size requirements: {width}x{height}")
+            return True
+        logger.warning(f"Image {url} too small: {width}x{height}")
+        return False
+    except Exception as e:
+        logger.error(f"Error checking image size for {url}: {e}")
+        return False
 
 def load_memes():
     global _memes_cache
@@ -209,13 +228,14 @@ async def generate_meme_audio(text, filename, funny_phrase):
     effect_name, effect_url, effect_fallback_url = sound_effect
     
     prompt = (
-        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}. "
-        f"Добавь фразу: '{funny_phrase}'"
+        f"{funny_phrase} {text}"
     )
+    if len(prompt) > 200:
+        prompt = prompt[:200]
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
-    logger.info(f"Sending audio request to API for text: {text}")
+    logger.info(f"Sending audio request to API for text: {prompt}")
     for attempt in range(2):
         try:
             response = requests.get(url, stream=True, timeout=30)
@@ -237,7 +257,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
                         main_audio = AudioSegment.from_mp3(filename)
                         effect_audio = AudioSegment.from_mp3(effect_file.name) + 5
                         combined = main_audio + effect_audio
-                        await asyncio.sleep(0.5)
+                        await asyncio.sleep(1)
                         combined.export(filename, format="mp3")
                         logger.info(f"Successfully added meme sound effect '{effect_name}' to {filename}")
                     except Exception as e:
