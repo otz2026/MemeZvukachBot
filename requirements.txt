@@ -6,3 +6,5 @@ beautifulsoup4==4.12.3
 curl-cffi==0.7.1
 flask==3.0.3
 nest_asyncio==1.6.0
+g4f
+Pillow
