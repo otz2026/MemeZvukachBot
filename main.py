@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from functools import lru_cache
+from typing import Union, List, Dict, Optional
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from pydub import AudioSegment
@@ -61,7 +62,7 @@ EMOJIS = {
 MENU_KEYBOARD = ReplyKeyboardMarkup([["🔥 Найти Шедевр", "🎲 Случайный Вайб"], ["🔍 Гид по Мемам"]], resize_keyboard=True)
 
 # Глобальные переменные
-_memes_cache = None
+_memes_cache: Optional[List[Dict]] = None
 user_phrase_history = defaultdict(lambda: deque(maxlen=5))
 user_requests = defaultdict(list)
 user_bans = {}
@@ -89,7 +90,7 @@ def temp_audio_file():
         except Exception as e:
             logger.warning(f"Failed to delete temp file {mp3_path}: {e}")
 
-async def check_user_spam(user_id: int) -> tuple[bool, str | None]:
+async def check_user_spam(user_id: int) -> tuple[bool, Union[str, None]]:
     """Проверяет, не спамит ли пользователь."""
     now = datetime.now()
     user_requests[user_id] = [t for t in user_requests[user_id] if now - t < timedelta(seconds=10)]
@@ -106,7 +107,7 @@ async def check_user_spam(user_id: int) -> tuple[bool, str | None]:
 
     return True, None
 
-async def generate_funny_phrase(meme: dict, user_id: int) -> tuple[str, str]:
+async def generate_funny_phrase(meme: Dict, user_id: int) -> tuple[str, str]:
     """Генерирует TikTok-фразу и смешную мемную фразу для мема."""
     tiktok_phrase = meme.get("tiktok_phrase", random.choice([
         "Ballo, boom, cavolo! 💥",
@@ -189,7 +190,7 @@ async def find_meme_photo(meme_name_english: str, meme_name_russian: str) -> str
             logger.error(f"Photo search error for {query}: {e}")
             return "Фото не найдено 😕"
 
-def load_memes() -> list:
+def load_memes() -> List[Dict]:
     """Загружает мемы из JSON-файла с кэшированием."""
     global _memes_cache
     if _memes_cache is not None:
@@ -206,7 +207,7 @@ def load_memes() -> list:
         logger.error(f"Load memes error: {e}")
         return []
 
-def find_closest_meme(query: str, memes: list) -> dict | None:
+def find_closest_meme(query: str, memes: List[Dict]) -> Optional[Dict]:
     """Находит мем по ближайшему совпадению имени."""
     query = query.lower().strip()
     logger.info(f"Searching for meme by name: {query}")
@@ -214,7 +215,7 @@ def find_closest_meme(query: str, memes: list) -> dict | None:
     closest = difflib.get_close_matches(query, names, n=1, cutoff=0.3)
     return next((m for m in memes if m["name"].lower() == closest[0]), None) if closest else None
 
-def find_meme_by_description(query: str, memes: list) -> dict | None:
+def find_meme_by_description(query: str, memes: List[Dict]) -> Optional[Dict]:
     """Находит мем по описанию."""
     query = query.lower().strip()
     logger.info(f"Searching for meme by description: {query}")
@@ -383,7 +384,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.delete()
         await update.message.reply_text(f"Ошибка поиска! 😕🚀 Пробуй снова.", reply_markup=MENU_KEYBOARD)
 
-async def prepare_meme_response(meme: dict, user_id: int) -> dict:
+async def prepare_meme_response(meme: Dict, user_id: int) -> Dict:
     """Подготавливает ответ с мемом."""
     try:
         tiktok_phrase, funny_phrase = await generate_funny_phrase(meme, user_id)
@@ -426,7 +427,7 @@ async def prepare_meme_response(meme: dict, user_id: int) -> dict:
             "reply_markup": MENU_KEYBOARD
         }
 
-async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE, response: dict, meme: dict):
+async def send_meme_response(update: Update, context: ContextTypes.DEFAULT_TYPE, response: Dict, meme: Dict):
     """Отправляет ответ с мемом."""
     try:
         if response["type"] == "voice":
