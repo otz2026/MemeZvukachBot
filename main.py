@@ -50,11 +50,9 @@ MENU_KEYBOARD = ReplyKeyboardMarkup([["🔥 Найти Шедевр", "🎲 Сл
 
 async_client = AsyncClient()
 semaphore = asyncio.Semaphore(5)
-PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема или ссылку на документацию с фото в высоком разрешении (не менее 1600x1200 пикселей), используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
+PHOTO_PRESET = """Ты бот, который получает название мемного животного из группы итальянских мемов (например, Bombardier Crocodile (Бомбардиро Крокодило)). Найди одно фото этого мема в хорошем качестве, используя английское и русское название. Верни только одну ссылку. Если ничего не найдено, верни 'Фото не найдено 😕'. Только ссылка или указанный текст."""
 EMOJI_PRESET = """Верни один яркий мемный эмодзи для мема {name_english} ({name}). Только эмодзи, без текста."""
-
-# Кэш мемов
-_memes_cache = None
+FUNNY_PHRASE_PRESET = """Сгенерируй короткую (до 50 символов), мемную, смешную и прикольную фразу на русском для мема {name_english} ({name}), вдохновлённого итальянскими TikTok-вайбами. Фраза должна быть абсурдной, с юмором, без мата. Пример: "Танцуй, как акула на роликах! 🦈🛼" Только фраза, без лишнего текста."""
 
 @contextmanager
 def temp_audio_file():
@@ -89,14 +87,35 @@ async def check_user_spam(user_id):
 
 async def generate_funny_phrase(meme):
     tiktok_phrase = meme.get("tiktok_phrase", "")
-    if tiktok_phrase:
-        return tiktok_phrase
+    if not tiktok_phrase:
+        tiktok_phrase = random.choice([
+            "Кроко-трап! 🐊💥", "Банана-туса! 🍌🎉", "Кофе-босс! ☕🔥", "Гусино-турбо! 🦢🚀",
+            "Тралала-бэнг! 🎤💥", "Пчела-бомба! 🐝💣", "Капибара-вайб! 🦫🌈", "Тигро-арбуз! 🐅🍉"
+        ])
     
-    backup_phrases = [
-        "Кроко-трап! 🐊💥", "Банана-туса! 🍌🎉", "Кофе-босс! ☕🔥", "Гусино-турбо! 🦢🚀",
-        "Тралала-бэнг! 🎤💥", "Пчела-бомба! 🐝💣", "Капибара-вайб! 🦫🌈", "Тигро-арбуз! 🐅🍉"
-    ]
-    return random.choice(backup_phrases)
+    async with semaphore:
+        try:
+            query = f"{meme['name_english']} ({meme['name']})"
+            response = await async_client.chat.completions.create(
+                model="meta-llama-3.1-405b-instruct",
+                provider=g4f.Provider.DeepInfra,
+                messages=[{"role": "system", "content": FUNNY_PHRASE_PRESET}, {"role": "user", "content": query}],
+                web_search=False,
+                stream=False
+            )
+            funny_phrase = response.choices[0].message.content.strip()
+            if len(funny_phrase) > 50:
+                funny_phrase = funny_phrase[:50]
+            logger.info(f"Generated funny phrase for {query}: {funny_phrase}")
+            return tiktok_phrase, funny_phrase
+        except Exception as e:
+            logger.error(f"Funny phrase generation error for {query}: {e}")
+            return tiktok_phrase, random.choice([
+                "Танцуй, как акула на роликах! 🦈🛼",
+                "Кофе льётся, вайб качается! ☕🎉",
+                "Гусь на турбо, держись, бро! 🦢🚀",
+                "Банан в космосе, у-у-у! 🍌🌌"
+            ])
 
 async def find_meme_emoji(meme_name_english, meme_name_russian):
     async with semaphore:
@@ -122,7 +141,7 @@ async def find_meme_emoji(meme_name_english, meme_name_russian):
 @lru_cache(maxsize=100)
 def cached_google_search(query):
     try:
-        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}&tbs=isz:lt,islt:uxga"
+        google_url = f"https://www.google.com/search?tbm=isch&q={urllib.parse.quote(query)}"
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(google_url, headers=headers, timeout=20)
         if response.status_code == 200:
@@ -130,6 +149,19 @@ def cached_google_search(query):
         logger.warning(f"Google search failed for {query}: {response.status_code}")
     except Exception as e:
         logger.error(f"Google search error for {query}: {e}")
+    return None
+
+@lru_cache(maxsize=100)
+def cached_bing_search(query):
+    try:
+        bing_url = f"https://www.bing.com/images/search?q={urllib.parse.quote(query)}"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(bing_url, headers=headers, timeout=20)
+        if response.status_code == 200:
+            return response.text
+        logger.warning(f"Bing search failed for {query}: {response.status_code}")
+    except Exception as e:
+        logger.error(f"Bing search error for {query}: {e}")
     return None
 
 async def find_meme_photo(meme_name_english, meme_name_russian):
@@ -151,19 +183,20 @@ async def find_meme_photo(meme_name_english, meme_name_russian):
         except Exception as e:
             logger.error(f"Photo search error for {query}: {e}")
         
-        try:
-            google_html = cached_google_search(query)
-            if google_html:
-                soup = BeautifulSoup(google_html, "html.parser")
-                img_tags = soup.find_all("img")
-                for img in img_tags[1:]:
-                    src = img.get("src")
-                    if src and src.startswith("http"):
-                        if await check_image_quality(src):
-                            logger.info(f"Google Images URL for {query}: {src}")
-                            return src
-        except Exception as e:
-            logger.error(f"Google Images search error for {query}: {e}")
+        for search_func in [cached_google_search, cached_bing_search]:
+            try:
+                html = search_func(query)
+                if html:
+                    soup = BeautifulSoup(html, "html.parser")
+                    img_tags = soup.find_all("img")
+                    for img in img_tags[1:]:
+                        src = img.get("src")
+                        if src and src.startswith("http"):
+                            if await check_image_quality(src):
+                                logger.info(f"Image URL for {query}: {src}")
+                                return src
+            except Exception as e:
+                logger.error(f"Image search error for {query}: {e}")
         
         logger.warning(f"No photo found for {query}")
         return "Фото не найдено 😕"
@@ -173,13 +206,13 @@ async def check_image_quality(url):
         response = requests.get(url, timeout=10, stream=True)
         response.raise_for_status()
         content_length = int(response.headers.get("Content-Length", 0))
-        if content_length < 100000:
+        if content_length < 50000:
             logger.warning(f"Image {url} too small: {content_length} bytes")
             return False
         
         img = Image.open(BytesIO(response.content))
         width, height = img.size
-        if width >= 1600 and height >= 1200:
+        if width >= 800 and height >= 600:
             logger.info(f"Image {url} meets quality requirements: {width}x{height}, {content_length} bytes")
             return True
         logger.warning(f"Image {url} resolution too low: {width}x{height}")
@@ -241,13 +274,13 @@ def download_meme_sound(sound_url, fallback_url, filename):
             logger.error(f"Failed to download meme sound from {url}: {e}")
     return False
 
-async def generate_meme_audio(text, filename, funny_phrase):
+async def generate_meme_audio(text, filename, tiktok_phrase, funny_phrase):
     sound_effect = random.choice(MEME_SOUNDS)
     effect_name, effect_url, effect_fallback_url = sound_effect
     
-    prompt = f"{funny_phrase} {text}"
-    if len(prompt) > 150:
-        prompt = prompt[:150]
+    prompt = f"{text}. {tiktok_phrase}. {funny_phrase}"
+    if len(prompt) > 200:
+        prompt = prompt[:200]
     encoded_prompt = urllib.parse.quote(prompt, safe='')
     url = f"https://text.pollinations.ai/{encoded_prompt}?model=openai-audio&voice=onyx&attitude=excited"
     
@@ -273,8 +306,8 @@ async def generate_meme_audio(text, filename, funny_phrase):
                         try:
                             main_audio = AudioSegment.from_mp3(filename)
                             effect_audio = AudioSegment.from_mp3(effect_file.name) + 10
-                            combined = main_audio + effect_audio
-                            await asyncio.sleep(1.5)
+                            silence = AudioSegment.silent(duration=500)
+                            combined = main_audio + silence + effect_audio
                             combined.export(filename, format="mp3")
                             logger.info(f"Successfully added meme sound effect '{effect_name}' to {filename}")
                         except Exception as e:
@@ -313,7 +346,7 @@ async def random_meme(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(ban_message, reply_markup=MENU_KEYBOARD)
         return
     
-    msg = await update.message.reply_text("🔎 Ищу мемный вайб... ⏳🦄")
+    msg = await update.message.reply_text("🔎 Ищу мемный шедевр... ⏳🎸")
     try:
         memes = load_memes()
         if not memes:
@@ -348,7 +381,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "🔍 Гид по Мемам":
         return await help_command(update, context)
     
-    msg = await update.message.reply_text("🔎 Ищу мемный вайб... ⏳🎸")
+    msg = await update.message.reply_text("🔎 Ищу мемный шедевр... ⏳🎸")
     try:
         memes = load_memes()
         if not memes:
@@ -373,21 +406,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Ошибка поиска! 😕🚀 Пробуй снова.", reply_markup=MENU_KEYBOARD)
 
 async def prepare_meme_response(meme, user_id, update):
-    funny_phrase = await generate_funny_phrase(meme)
-    voice_text = f"{meme['name_english']}"
+    tiktok_phrase, funny_phrase = await generate_funny_phrase(meme)
+    voice_text = meme['name_english']
     
     logger.info(f"Preparing response for meme '{meme['name']}' for user {user_id}")
     
-    audio_msg = await update.message.reply_text("🎙️ Записываю TikTok-бэнгер... ⏳🔊")
-    audio_task = asyncio.create_task(generate_meme_audio(voice_text, f"{AUDIO_DIR}/temp_{user_id}.mp3", funny_phrase))
-    photo_msg = await update.message.reply_text("🖼️ Подбираю шедевральную фотку... ⏳📸")
+    audio_task = asyncio.create_task(generate_meme_audio(voice_text, f"{AUDIO_DIR}/temp_{user_id}.mp3", tiktok_phrase, funny_phrase))
     photo_task = asyncio.create_task(find_meme_photo(meme["name_english"], meme["name"]))
     emoji_task = asyncio.create_task(find_meme_emoji(meme["name_english"], meme["name"]))
     
     audio_success, photo_url, emoji = await asyncio.gather(audio_task, photo_task, emoji_task)
-    
-    await audio_msg.delete()
-    await photo_msg.delete()
     
     try:
         return {
@@ -398,7 +426,7 @@ async def prepare_meme_response(meme, user_id, update):
                 f"{emoji} Озвучка... 🎸\n"
                 f"{meme['name_english']}, {meme['name']}\n\n"
                 f"{meme['description']}\n\n"
-                f"{funny_phrase} 🌟🎉"
+                f"{tiktok_phrase}\n{funny_phrase} 🌟🎉"
             ),
             "link": photo_url,
             "reply_markup": MENU_KEYBOARD
@@ -410,7 +438,7 @@ async def prepare_meme_response(meme, user_id, update):
             "text": (
                 f"{emoji} {meme['name_english']}, {meme['name']} 🦄\n\n"
                 f"{meme['description']}\n\n"
-                f"{funny_phrase} 🌟🎉"
+                f"{tiktok_phrase}\n{funny_phrase} 🌟🎉"
             ),
             "link": "Фото не найдено 😕",
             "reply_markup": MENU_KEYBOARD
@@ -445,7 +473,6 @@ async def main():
         raise ValueError("TELEGRAM_TOKEN is required")
     
     try:
-        # Проверка состояния бота
         response = requests.get(f"https://api.telegram.org/bot{TOKEN}/getMe", timeout=10)
         if response.status_code == 200:
             logger.info("Bot is accessible: %s", response.json())
@@ -453,8 +480,7 @@ async def main():
             logger.error("Failed to access bot: %s", response.text)
             raise ValueError("Bot initialization failed")
         
-        # Очистка вебхуков
-        for _ in range(3):  # Повтор для надежности
+        for _ in range(3):
             requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True", timeout=10)
             requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url=", timeout=10)
             await asyncio.sleep(1)
@@ -478,7 +504,7 @@ async def main():
     
     logger.info("Бот готов зажигать TikTok-вайб!")
     keep_alive()
-    await asyncio.sleep(10)  # Увеличенная задержка для очистки
+    await asyncio.sleep(10)
     try:
         await app.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
     except Exception as e:
