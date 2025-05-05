@@ -84,7 +84,7 @@ async def generate_funny_phrase(user_id):
     except Exception as e:
         logger.error(f"Phrase generation error for user {user_id}: {e}")
     
-    backup_phrases = ["Гиппо-тусня! 🦛", "Краб-шокер! 🦀", "Трали-бум! 🎤", "Капучино-вайб! ☕"]
+    backup_phrases = ["Йоу чеееееееллл!", "Кабира бойс", "Ваааааааааай какой человечек 🎤", "Капучино-вайб! ☕"]
     available_phrases = [p for p in backup_phrases if p not in user_phrases]
     if not available_phrases:
         user_phrases.clear()
@@ -209,7 +209,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
     effect_name, effect_url, effect_fallback_url = sound_effect
     
     prompt = (
-        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}. "
+        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}, {name_english}."
         f"Добавь фразу: '{funny_phrase}'"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
