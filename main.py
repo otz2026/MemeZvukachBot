@@ -211,7 +211,7 @@ async def generate_meme_audio(text, filename, funny_phrase):
     effect_name, effect_url, effect_fallback_url = sound_effect
     
     prompt = (
-        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}, {tiktok_phrase}"
+        f"Озвучь с точным итальянским TikTok-вайбом, как в мемах, с пафосом и энергией: {text}."
         f"Добавь фразу: '{funny_phrase}'"
     )
     encoded_prompt = urllib.parse.quote(prompt, safe='')
